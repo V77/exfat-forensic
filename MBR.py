@@ -14,27 +14,6 @@ d=open(filename, 'rb')
 content = d.read()[0:512]
 
 
-	
-#========================================================#
-#	                 Methode de lecture					 #
-#========================================================#
-
-#lire 1 byte = B
-#---------------------------------------------
-def read_1(data):
-	return struct.unpack('< B', data)
-
-#lire 2 byte = H
-#---------------------------------------------
-def read_2(data):
-	return struct.unpack('< H', data)
-
-#lire 4 byte = I
-#---------------------------------------------
-def read_4(data):
-	return struct.unpack('< I', data)
-
-
 #========================================================#
 #	           Initialisation Variable MBR				 #
 #========================================================#
@@ -57,9 +36,9 @@ def read_4(data):
 	#------+------------------------+----------------+ 
 
 
-boot = content[:440]
-sig = content[441:445]
-part_table = content[446:509]
+boot = content[0:440]
+sig = content[441:446]
+part_table = content[446:510]
 fin_mbr = content[510:512]
 
 
@@ -79,6 +58,7 @@ fin_mbr = content[510:512]
 
 if fin_mbr == '\x55\xaa':
 	print 'MBR OK'
+	print ""
 else:
 	print 'MBR NOK'
 
@@ -107,42 +87,56 @@ else:
 	#------+------------------------+----------------+
 
 #def struct table_part
+
+
 part_0 = part_table[0:16]
-part_1 = part_table[17:32]
-part_2 = part_table[33:48]
-part_3 = part_table[49:]
+part_1 = part_table[16:32]
+part_2 = part_table[32:48]
+part_3 = part_table[48:64]
 
-#print part_0.encode("hex")
-#def strcu partition
+partitions=[]
+partitions.append(part_0)
+partitions.append(part_1)
+partitions.append(part_2)
+partitions.append(part_3)
 
-boot_part = part_0[0]
-type_part = part_0[4]
-first_sect_part = part_0[8:12]
-nb_sect_part = part_0[12:16]
+type_part_dict = {'\x00':'NULL','\x01':'FAT12','\x0E':'FAT16','\x0B':'FAT32','\x0F':'Extended','\x05':'Extended','\x07':'NTFS','\x83':'Linux native','\x82':'Linux swap','\xEE':'EFI'}
 
+j=0
+
+
+for i in partitions:
+	print "#=============================================================================#"
+	print "#                               Partition "+str(j)+ "                                   #"
+	print "#=============================================================================#"
+	
+	#def strcu partition
+	boot_part = i[0]
+	type_part = i[4]
+	first_sect_part = i[8:12]
+	nb_sect_part = i[12:16]
 
 #========================================================#
 #	            Verification type partition				 #
 #========================================================#
 
+#verif si type = 7 :
+	
+	print "Type Partition : "+type_part_dict[type_part]
+	#print type_part
 
-#verif si type = 7
-
-type_part_dict = {'\x01':'FAT12','\x0E':'FAT16','\x0B':'FAT32','\x0F':'Extended','\x05':'Extended','\x07':'NTFS','\x83':'Linux native','\x82':'Linux swap','\xEE':'EFI'}
-
-#print type_part
-print "Type Partition : "+type_part_dict[type_part]
 
 
 #========================================================#
 #	           Verification partition boot				 #
 #========================================================#
 
-if boot_part == '\x80':
-	print 'Partition bootable'
-else:
-	print 'Partition non bootable'
-#print repr(boot_part)
+	if boot_part == '\x80':
+		print 'Partition bootable'
+	else:
+		print 'Partition non bootable'
+
+	#print repr(boot_part)
 
 
 #========================================================#
@@ -150,13 +144,19 @@ else:
 #========================================================#
 # !!!!!!! Attention little endian !!!!!!!
 
-first_sect_part = struct.unpack('<I',first_sect_part)[0]
-nb_sect_part = struct.unpack('<I',nb_sect_part)[0]
-end_sect_part = nb_sect_part + first_sect_part -1
+	first_sect_part = struct.unpack('<I',first_sect_part)[0]
+	nb_sect_part = struct.unpack('<I',nb_sect_part)[0]
+	end_sect_part = nb_sect_part + first_sect_part -1
 
-print "Start = "+ str(first_sect_part)
-print "Length = "+ str(nb_sect_part)
-print "End = "+str(end_sect_part)
+	print "Start = "+ str(first_sect_part)
+	print "Length = "+ str(nb_sect_part)
+	print "End = "+str(end_sect_part)
+	j=j+1
+
+
+print "#=============================================================================#"
+print "#                                      Fin                                    #"
+print "#=============================================================================#"
 
  
 

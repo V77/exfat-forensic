@@ -14,6 +14,7 @@ if len(sys.argv) < 2:
 	print("Precisez une action en parametre")
 	sys.exit(1)
 
+#Ouverture du fichier appeler par l'argument
 filename = sys.argv[1]
 d=open(filename, 'rb')
 content = d.read()[0:512]
@@ -112,13 +113,17 @@ if fin_mbr == '\x55\xaa': #END OF MBR
 		'\x82':'Linux swap',
 		'\xEE':'EFI'
 	}
-
-	j=0 #compteur partition
-
+	
+	#Compteur partition
+	j=0 
+	
+	#En-tete tableau
 	print "Part	Boot	Start		End		Length		Description"
 	
 	for i in partitions:
 		
+		
+		#Decommente pour voir hexa partition :
 		#print i.encode("hex")
 		
 
@@ -129,27 +134,26 @@ if fin_mbr == '\x55\xaa': #END OF MBR
 		nb_sect_part = i[12:16]
 
 
-		#print repr(boot_part)
 	#========================================================#
 	#	           Verification partition boot				 #
 	#========================================================#
 
 	
-	#print repr(boot_part)
+		#print repr(boot_part)
 		if boot_part == "\x80":
 			boot_part_res = "Yes"
 		else:
 			boot_part_res = "No"
 			
 
-
-
 	#========================================================#
 	#	            Verification type partition				 #
 	#========================================================#
 
 
-		if type_part != '\x00':
+		#Si non vide Alors
+		if type_part != '\x00': 
+			
 		#print type_part_dict[type_part]
 		#print type_part
 			
@@ -159,22 +163,23 @@ if fin_mbr == '\x55\xaa': #END OF MBR
 	#========================================================#
 	# !!!!!!! Attention little endian !!!!!!!
 	
-		
+			#struct.unpack --> "<" pour little endian
 			first_sect_part = struct.unpack('<I',first_sect_part)[0]
 			nb_sect_part = struct.unpack('<I',nb_sect_part)[0]
 			end_sect_part = nb_sect_part + first_sect_part - 1
-
-			print str(j)+"	"+boot_part_res+"	{0:010d}".format(first_sect_part)+"	{0:010d}".format(nb_sect_part)+"	{0:010d}".format(end_sect_part)+"	"+type_part_dict[type_part]
 			
-			#print "Start = {0:010d}".format(first_sect_part)
-			#print "Length = {0:010d}".format(nb_sect_part)
-			#print "End = {0:010d}".format(end_sect_part)
-			#print ""
+			
+			#Format resultat 
+			print str(j)+"	"+boot_part_res+"	{0:010d}".format(first_sect_part)+"	{0:010d}".format(nb_sect_part)+"	{0:010d}".format(end_sect_part)+"	"+type_part_dict[type_part]+" (0x"+type_part.encode("hex")+")"
+			
 			j=j+1
 			
 		else:
+			#Format resultat type partition NULL
 			print str(j)+"	"+boot_part_res+"	---------"+"	---------"+"	---------	"+type_part_dict[type_part]
 			j=j+1
+
+# Si fin des 512 bites != à 55aa :
 else:
 	print "ERROR : MBR na pas ete trouve !"
 	sys.exit(1)

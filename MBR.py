@@ -9,7 +9,12 @@ import os
 #	               Chargement fichier					 #
 #========================================================#
 
-filename = '/root/AFTI/disk1.001'
+
+if len(sys.argv) < 2:
+	print("Precisez une action en parametre")
+	sys.exit(1)
+
+filename = sys.argv[1]
 d=open(filename, 'rb')
 content = d.read()[0:512]
 
@@ -56,12 +61,18 @@ fin_mbr = content[510:512]
 #print type(fin_mbr)
 #print fin_mbr.encode("hex")
 
+print "#=============================================================================#"
+print "#	                      Verification de la MBR		 	      #"
+print "#=============================================================================#"
+print ""
 if fin_mbr == '\x55\xaa':
-	print 'MBR OK'
+	print 'La MBR est OK'
 	print ""
 else:
-	print 'MBR NOK'
-
+	print "ERROR : MBR na pas ete trouve !"
+	sys.exit(1)
+	
+print ""
 
 #========================================================#
 #	            Initialisation Partitions				 #
@@ -106,10 +117,7 @@ j=0
 
 
 for i in partitions:
-	print "#=============================================================================#"
-	print "#                               Partition "+str(j)+ "                                   #"
-	print "#=============================================================================#"
-	
+
 	#def strcu partition
 	boot_part = i[0]
 	type_part = i[4]
@@ -121,37 +129,48 @@ for i in partitions:
 #========================================================#
 
 #verif si type = 7 :
-	
-	print "Type Partition : "+type_part_dict[type_part]
-	#print type_part
-
+	if type_part != '\x00':
+		print "#=============================================================================#"
+		print "#                            Partition "+str(j)+ "                          	      #"
+		print "#=============================================================================#"
+		print ""
+		print "Type Partition : "+type_part_dict[type_part]
+		print type_part
 
 
 #========================================================#
 #	           Verification partition boot				 #
 #========================================================#
 
-	if boot_part == '\x80':
-		print 'Partition bootable'
-	else:
-		print 'Partition non bootable'
+		#print repr(boot_part)
+		if boot_part == '\x80':
+			print 'Partition bootable'
+		else:
+			print 'Partition non bootable'
 
-	#print repr(boot_part)
-
-
+		
 #========================================================#
 #	           		Analyse @ secteur 					 #
 #========================================================#
 # !!!!!!! Attention little endian !!!!!!!
+	
+		first_sect_part = struct.unpack('<I',first_sect_part)[0]
+		nb_sect_part = struct.unpack('<I',nb_sect_part)[0]
+		end_sect_part = nb_sect_part + first_sect_part -1
 
-	first_sect_part = struct.unpack('<I',first_sect_part)[0]
-	nb_sect_part = struct.unpack('<I',nb_sect_part)[0]
-	end_sect_part = nb_sect_part + first_sect_part -1
+		print "Start = {0:010d}".format(first_sect_part)
+		print "Length = {0:010d}".format(nb_sect_part)
+		print "End = {0:010d}".format(end_sect_part)
+		print ""
+		j=j+1
+	else:
+		print "#=============================================================================#"
+		print "#                                      Fin                                    #"
+		print "#=============================================================================#"
+		sys.exit(1)
+	
 
-	print "Start = "+ str(first_sect_part)
-	print "Length = "+ str(nb_sect_part)
-	print "End = "+str(end_sect_part)
-	j=j+1
+
 
 
 print "#=============================================================================#"

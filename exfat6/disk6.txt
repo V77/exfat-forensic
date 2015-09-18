@@ -1,0 +1,100 @@
+f2317004bc0df7a40d38a8064a31713fb45b7358 *e:btype.exe
+da39a3ee5e6b4b0d3255bfef95601890afd80709 *e:new - Copie - Copie.TXT
+da39a3ee5e6b4b0d3255bfef95601890afd80709 *e:new - Copie.TXT
+da39a3ee5e6b4b0d3255bfef95601890afd80709 *e:new.TXT
+a2b7a3a43162ac0028b6595d5e11f3eea10a1411 *e:reverse-engineering-microsoft-exfat-file-system-33274-1.pdf
+88b300ff1e0a8f9d15ffb828e819739424987c3d *e:sha1sum.exe
+71bfb71c7564904a69af714e1f96d4e67502a9ae *e:sha256sum.exe
+dda623d8e8399a83fd958509905723c5b397fd41 *e:sums.txt
+
+C:\Users\lclevy\Desktop\afti2>chkdsk e:
+Le type du système de fichiers est exFAT.
+Le numéro de série du volume est F89E-0F6E
+Windows vérifie les fichiers et les dossiers...
+Le nom de volume est EOS_DIGITAL6.
+Vérification des fichiers et des dossiers terminée.
+Windows a vérifié le système de fichiers sans trouver de problème.
+
+     60716 Ko d'espace disque au total.
+      2622 Ko dans 21 fichiers.
+        12 Ko dans 6 index.
+         0 Ko dans des secteurs défectueux.
+        10 Ko utilisés par le système.
+     58072 Ko disponibles sur le disque.
+
+      2048 octets dans chaque unité d'allocation.
+     30358 unités d'allocation au total sur le disque.
+     29036 unités d'allocation disponibles sur le disque.
+     
+C:\Users\lclevy\Desktop\afti2>dir /s e:
+ Le volume dans le lecteur E s'appelle EOS_DIGITAL6
+ Le numéro de série du volume est F89E-0F6E
+
+ Répertoire de E:\
+
+14/09/2015  23:59         1 680 451 reverse-engineering-microsoft-exfat-file-system-33274-1.
+26/05/2015  13:12    <REP>          lime
+17/09/2015  21:33                 0 new.TXT
+17/09/2015  21:33                 0 new - Copie.TXT
+17/09/2015  21:33                 0 new - Copie - Copie.TXT
+17/09/2015  21:33    <REP>          dir
+17/09/2015  21:33    <REP>          dir - Copie
+17/09/2015  21:36               513 sums.txt
+20/06/2003  16:57            30 720 sha1sum.exe
+04/12/2014  21:01            46 080 sha256sum.exe
+13/09/2015  16:29            69 789 btype.exe
+               8 fichier(s)        1 827 553 octets
+
+ Répertoire de E:\lime
+
+26/05/2015  13:12    <REP>          .
+26/05/2015  13:12    <REP>          ..
+20/12/2014  07:20            18 027 LICENSE
+20/12/2014  07:20             2 270 README.md
+20/12/2014  07:20    <REP>          doc
+27/05/2015  07:44    <REP>          src
+               2 fichier(s)           20 297 octets
+
+ Répertoire de E:\lime\doc
+
+20/12/2014  07:20    <REP>          .
+20/12/2014  07:20    <REP>          ..
+20/12/2014  07:20             9 237 README.md
+               1 fichier(s)            9 237 octets
+
+ Répertoire de E:\lime\src
+
+27/05/2015  07:44    <REP>          .
+27/05/2015  07:44    <REP>          ..
+20/12/2014  07:20             2 368 disk.c
+26/05/2015  13:23             9 896 lime-3.13.0-44-generic-x86_64.ko
+20/12/2014  07:20             1 821 lime.h
+20/12/2014  07:20             5 113 main.c
+26/05/2015  13:12             1 678 Makefile
+20/12/2014  07:20             1 723 Makefile.sample
+20/12/2014  07:20             3 160 tcp.c
+27/05/2015  07:33           772 565 lime.ko.unsigned
+27/05/2015  07:33               258 .lime.ko.unsigned.cmd
+27/05/2015  07:33            10 728 lime-2.6.32-504.el6.x86_64-x86_64.ko
+              10 fichier(s)          809 310 octets
+
+ Répertoire de E:\dir
+
+17/09/2015  21:33    <REP>          .
+17/09/2015  21:33    <REP>          ..
+               0 fichier(s)                0 octets
+
+ Répertoire de E:\dir - Copie
+
+17/09/2015  21:33    <REP>          .
+17/09/2015  21:33    <REP>          ..
+               0 fichier(s)                0 octets
+
+     Total des fichiers listés :
+              21 fichier(s)        2 666 397 octets
+              15 Rép(s)      59 465 728 octets libres
+              
+C:\Users\lclevy\Desktop\afti2>sha1sum e:\lime\src\lime.ko.unsigned
+\e98bf94994c735376cc6bc556ea4af3008dee5e1 *e:\\lime\\src\\lime.ko.unsigned
+               
+               

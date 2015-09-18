@@ -1,0 +1,43 @@
+ Le volume dans le lecteur E s'appelle EOS_DIGITAL3
+ Le numéro de série du volume est CC01-B183
+
+ Répertoire de E:\
+
+23/08/2012  22:13           231 936 adencrypt_gui.exe
+23/08/2012  22:12             7 680 adfs_globals.dll
+23/08/2012  22:12            70 144 ADIsoDLL.dll
+23/08/2012  22:13           377 856 adshattrdefs.dll
+17/09/2015  21:25    <REP>          empty_dir
+17/09/2015  21:25                12 new_file.txt
+16/02/2015  11:26    <REP>          langs
+               5 fichier(s)          687 628 octets
+               2 Rép(s)      14 581 760 octets libres
+               
+               C:\Users\lclevy\Desktop\afti2>chkdsk e:
+Le type du système de fichiers est exFAT.
+Le numéro de série du volume est CC01-B183
+Windows vérifie les fichiers et les dossiers...
+Le nom de volume est EOS_DIGITAL3.
+Vérification des fichiers et des dossiers terminée.
+Windows a vérifié le système de fichiers sans trouver de problème.
+
+     30246 Ko d'espace disque au total.
+     15990 Ko dans 38 fichiers.
+         8 Ko dans 3 index.
+         0 Ko dans des secteurs défectueux.
+         8 Ko utilisés par le système.
+     14240 Ko disponibles sur le disque.
+
+      2048 octets dans chaque unité d'allocation.
+     15123 unités d'allocation au total sur le disque.
+      7120 unités d'allocation disponibles sur le disque.
+
+C:\Users\lclevy\Desktop\afti2>sha1sum e:*
+e0dad8509db60dfeb4a25d68bbf68ea1bd48f813 *e:adencrypt_gui.exe
+5e61915e9b221840ddf7e57eb7936609bef321a4 *e:adfs_globals.dll
+2b500cb810a1e4a08225e01c24b3a00f078ae02b *e:ADIsoDLL.dll
+0bc7b7852b1ee43c7fd5e808f49b49a97247748b *e:adshattrdefs.dll
+sha1sum: e:empty_dir: Permission denied
+sha1sum: e:langs: Permission denied
+e24fe0dea7f9abe8cbb192702578715079689a3e *e:new_file.txt
+      

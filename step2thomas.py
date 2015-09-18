@@ -1,66 +1,127 @@
 #!/usr/bin/python
 
-1. Jmp instruction
-2. Signature: « EXFAT »
-3. VBR1 address= sector number: 0x33 (début disque) = 0x33*512=0x6600
-4. Total volume size in sectors: 0xED4D = 32mo
-5. Address of FAT#1: secteur 0x80 (+VBR)
-6. Size of FAT: 0x40 sectors
-7. Data/cluster region address: 0x100 (+VBR)
-8. Number of Cluster number in the Cluster heap
-9. Cluster address of root dir: 5
-10. Volume S/N
-11. exFat version: 1.0
-12. Flags
-13. Bytes per sectors: 9 (2^9 = 512 bytes)
-14. Sectors per clusters: 3 (2^3 = 8)
-15. End of bootcode
-16. Synchro fin de secteur
+import sys
+import struct
+import os
 
 
 
-fat_address
-fat_size
-cluster_region_address
-root_cluster_address
-
-byte_per_cluster
 
 
 
-vbr = [
-
- 
-addr_fat1 
-fat_size 
-addr_data_region
-cluster_num
-root_cluster
-serial_num
-sector_size
-cluster_size
 
 
-def __init__(self, vbr_offset)
-	dump = open("dump.raw", "r")
-	dump.seek(vbr_offset)
-	vbrcontent = dump.read(512)
+#------------Ouverture Dump----------
+dump = open("disk1.001", "r")
+vbr_offset = 0x00006600
+dump.seek(vbr_offset)
+vbrcontent = dump.read(512)
+
+
+	
+
+#-----------------Informations recerche dans VBR-------------------------
+# exFAT VBR
+#Taille de la VBR = 12 secteurs
+#0:2 Jmp Instruction
+#3:10 Signature exFAT
+#65:72 adresse VBR1 = sector number 0x33	debut disque = 0x33*512 = 0x6600
+#73:80 	Taille total du volume 
+#81:84	Addresse de la fat
+#85:88  taille de la fat
+#89:92  data cluster region adresse
+#93:96  number of cluster numer in the cluster heap
+#97:100 cluster adresse of root dir 
+#101:104 volume S/n
+#105:106 exfat version
+#107:108 flags
+#109 bytes per sector
+#110 sectors per cluster
+#end of bootcode
+#130 debut disque 
+
+#65 ->33 00 00 00 
+
+
+def get_signature():
 
 	signature = vbrcontent[3:10]
-	addr_vbr1 = vbr_offset
-	taille_vol = vbrcontent[]
-	taille_vol = vbr_offset + (12*512)
-	addr_fat1 = vbrcontent[80:84]
-	fat_size = vbrcontent[84:88]
-	addr_data_region = 
-	cluster_num 
-	bytes_per_sector = vbrcontent[109:109]
-	sect_per_cluster = vbrcontent[109:110]
-	root_cluster = 
-	serial_num
-	sector_size
-	cluster_size
+	print signature
 
 
 
-73 8
+#I : 32
+
+#return struct.unpack('<I', var)
+
+
+
+
+
+#--------------Fonctions Recuperation valeurs-------------
+
+def get_addr_vbr1():
+
+	addr_vbr1 = vbrcontent[65:72]
+	print struct.unpack('<I' addr_vbr1)
+
+def get_taille_vol():
+	taille_vol = vbrcontent[73:80]
+	print struct.unpack('<I' taille_vol)
+
+def get_addr_fat1():
+	addr_fat1 = vbrcontent[81:84]
+	print struct.unpack('<I', addr_fat1)
+
+def get_fat_size():
+	fat_size = vbrcontent[85:88]
+	print struct.unpack('<I', fat_size)
+
+def get_addr_data_region():
+	addr_data_region = vbrcontent[89:92]
+	print struct.unpack('<I', addr_data_region)
+
+def get_cluster_num():
+	cluster_num = vbrcontent[93:96]
+	print struct.unpack('<I', cluster_num)
+
+def get_bytes_per_sector():
+	bytes_per_sector = vbrcontent[109]
+	print struct.unpack('<I', bytes_per_sector)
+
+
+def get_sect_per_cluster():
+	bytes_per_cluster = vbrcontent[110]
+	print struct.unpack('<I', bytes_per_sector)
+
+def get_root_cluster():
+	root_cluster = vbrcontent[97:100]
+	print struct.unpack('<I', root_cluster)
+
+def get_serial_num():
+	serial_num = vbrcontent[101:104]
+	print struct.unpack('<I', serial_num)
+
+
+
+
+
+#-------------Calcul valeurs finales-----------
+
+#sector_size = 2 ** int(bytes_per_sector)
+#cluster_size = 2 ** int(sect_per_cluster)
+
+
+#------------Affiche Resultats-----------------
+print "VBR size : 12 sectors"
+get_signature()
+get_addr_vbr1()
+get_taille_vol()
+get_addr_fat1()
+get_fat_size()
+get_addr_data_region()
+get_cluster_num
+get_bytes_per_sector
+get_sect_per_cluster
+get_root_cluster
+get_serial_num

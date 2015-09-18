@@ -179,7 +179,7 @@ if fin_mbr == '\x55\xaa': #END OF MBR
 			print str(j)+"	"+boot_part_res+"	----------"+"	----------"+"	---------	"+type_part_dict[type_part]
 			j=j+1
 
-# Si fin des 512 bites != à 55aa :
+# Si fin des 512 bites != a 55aa :
 else:
 	print "ERROR : MBR na pas ete trouve !"
 	sys.exit(1)

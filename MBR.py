@@ -176,7 +176,7 @@ if fin_mbr == '\x55\xaa': #END OF MBR
 			
 		else:
 			#Format resultat type partition NULL
-			print str(j)+"	"+boot_part_res+"	---------"+"	---------"+"	---------	"+type_part_dict[type_part]
+			print str(j)+"	"+boot_part_res+"	----------"+"	----------"+"	---------	"+type_part_dict[type_part]
 			j=j+1
 
 # Si fin des 512 bites != à 55aa :

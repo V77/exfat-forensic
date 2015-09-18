@@ -5,20 +5,14 @@ import struct
 import os
 
 
-
-
-
-
-
-
 #------------Ouverture Dump----------
 dump = open("disk1.001", "r")
 vbr_offset = 0x00006600
 dump.seek(vbr_offset)
 vbrcontent = dump.read(512)
 
+#print vbrcontent.encode("hex")
 
-	
 
 #-----------------Informations recerche dans VBR-------------------------
 # exFAT VBR
@@ -40,77 +34,64 @@ vbrcontent = dump.read(512)
 #end of bootcode
 #130 debut disque 
 
-#65 ->33 00 00 00 
-
+#--------------Fonctions Recuperation valeurs-------------
 
 def get_signature():
 
 	signature = vbrcontent[3:10]
-	print signature
-
-
-
-#I : 32
-
-#return struct.unpack('<I', var)
-
-
-
-
-
-#--------------Fonctions Recuperation valeurs-------------
+	print "Signature de la partition :", signature
 
 def get_addr_vbr1():
 
-	addr_vbr1 = vbrcontent[65:72]
-	print struct.unpack('<I' addr_vbr1)
+	addr_vbr1 = vbrcontent[64:72]
+	print "Sector Address",vbrcontent[64:72].encode("hex")
+	#print "Sector Address", struct.unpack('<Q', addr_vbr1)
 
 def get_taille_vol():
-	taille_vol = vbrcontent[73:80]
-	print struct.unpack('<I' taille_vol)
+	taille_vol = vbrcontent[72:80]
+	print "Size of Total volume in sectors",vbrcontent[72:80].encode("hex")
+	#print "Size of Total volume in sectors" ,struct.unpack('<Q', taille_vol)
 
 def get_addr_fat1():
-	addr_fat1 = vbrcontent[81:84]
-	print struct.unpack('<I', addr_fat1)
+	addr_fat1 = vbrcontent[80:84]
+	print "Addresse de la premiere FAT",vbrcontent[80:84].encode("hex")
+	#print "Addresse de la premiere FAT", struct.unpack('<I', addr_fat1)
 
 def get_fat_size():
 	fat_size = vbrcontent[85:88]
-	print struct.unpack('<I', fat_size)
+	print "Taille de la FAT",vbrcontent[85:88].encode("hex")
+	#print struct.unpack('<I', fat_size)
 
 def get_addr_data_region():
 	addr_data_region = vbrcontent[89:92]
-	print struct.unpack('<I', addr_data_region)
+	print "Addresse Data Region",vbrcontent[89:92].encode("hex")
+	#print struct.unpack('<I', addr_data_region)
 
 def get_cluster_num():
 	cluster_num = vbrcontent[93:96]
-	print struct.unpack('<I', cluster_num)
+	print "Nombre Cluster",vbrcontent[93:96].encode("hex")
+	#print struct.unpack('<I', cluster_num)
 
 def get_bytes_per_sector():
 	bytes_per_sector = vbrcontent[109]
-	print struct.unpack('<I', bytes_per_sector)
+	print "Bytes par secteur",vbrcontent[109].encode("hex")
+	#print struct.unpack('<I', bytes_per_sector)
 
 
 def get_sect_per_cluster():
 	bytes_per_cluster = vbrcontent[110]
-	print struct.unpack('<I', bytes_per_sector)
+	print "secteurs par cluster",vbrcontent[110].encode("hex")
+	#print struct.unpack('<I', bytes_per_sector)
 
 def get_root_cluster():
 	root_cluster = vbrcontent[97:100]
-	print struct.unpack('<I', root_cluster)
+	print "Cluster racine",vbrcontent[97:100].encode("hex")
+	#print struct.unpack('<I', root_cluster)
 
 def get_serial_num():
 	serial_num = vbrcontent[101:104]
-	print struct.unpack('<I', serial_num)
-
-
-
-
-
-#-------------Calcul valeurs finales-----------
-
-#sector_size = 2 ** int(bytes_per_sector)
-#cluster_size = 2 ** int(sect_per_cluster)
-
+	print "numero de serie",vbrcontent[101:104].encode("hex")
+	#print struct.unpack('<I', serial_num)
 
 #------------Affiche Resultats-----------------
 print "VBR size : 12 sectors"

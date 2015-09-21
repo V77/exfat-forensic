@@ -1,3 +1,4 @@
+
 #!/usr/bin/python
 
 import sys
@@ -104,13 +105,31 @@ if fin_mbr == '\x55\xaa': #END OF MBR
 	type_part_dict = { 
 		'\x00':'EMPTY',
 		'\x01':'FAT12',
-		'\x0E':'FAT16',
-		'\x0B':'FAT32',
-		'\x0F':'Extended',
-		'\x05':'Extended',
+		'\x04':'FAT16',
+		'\x05':'MS_EXTENTED'
+		'\x06':'FAT16',
 		'\x07':'NTFS', # 0x07 aussi EXFAT
-		'\x83':'Linux native',
-		'\x82':'Linux swap',
+		'\x0B':'FAT32',
+		'\x0C':'FAT32',
+		'\x0E':'FAT16',
+		'\x0F':'MS_EXTENTED',
+		'\x11':'HIDDEN_FAT12',
+		'\x14':'HIDDEN_FAT16',
+		'\x16':'HIDDEN_FAT16',
+		'\x1B':'HIDDEN_FAT32',
+		'\x1C':'HIDDEN_FAT32',
+		'\x1E':'HIDDEN_FAT16',
+		'\x42':'MS_MBR_DYNAMIC',
+		'\x82':'SOLARIS_X86',
+		'\x82':'LINUX_SWAP',
+		'\x83':'LINUX',
+		'\x84':'HIBERNATION',
+		'\x85':'LINUX_EXTENDED',
+		'\x86':'NTFS_VOLUME_SET',
+		'\x87':'NTFS_VOLUME_SET_1',
+		'\xA0':'HIBERNATION_1',
+		'\xA1':'HIBERNATION_2',
+		'\xA5':'FREEBSD',
 		'\xEE':'EFI'
 	}
 	

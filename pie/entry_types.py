@@ -27,8 +27,8 @@ DELETED_FILE = 0x40
 class Vlde(object):
 	def __init__(self, payload):
 		self.character_count = struct.unpack("<B", payload[1])[0]
-		self.volume_label = payload[2:24]
-		self.reserved = payload[24:32]
+		self.volume_label = payload[2:26]
+		self.reserved = payload[26:32]
 
 	def __repr__(self):
 		return 	"Volume Label Directory Entry\n" +\

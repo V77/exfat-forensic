@@ -99,8 +99,11 @@ class Fde(object):
 		self.reserved2 = payload[25:32]
 
 	def is_directory(self):
-		attributes = "{0:016b}".format(self.file_attributes)[::-1]
+		attributes = self.get_attributes()
 		return True if int(attributes[4]) else False
+
+	def get_attributes(self):
+		return "{0:016b}".format(self.file_attributes)[::-1]
 
 	def __repr__(self):
 		return 	"File Directory Entry\n" +\
@@ -169,7 +172,7 @@ class Entry(object):
 		elif self.entry_type == FDE:
 			self.entry = Fde(payload)
 
-		elif self.entry_type == SEDE:
+		elif self.entry_type == SEDE or self.entry_type == DELETED_FILE:
 			self.entry = Sede(payload)
 
 		elif self.entry_type == FNEDE:

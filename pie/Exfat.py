@@ -4,6 +4,7 @@ from Vbr import *
 from entry_types import *
 from Fat import *
 from RootDir import *
+from AllocationBitmap import *
 
 CLUSTER_START = 2
 
@@ -14,6 +15,7 @@ class Exfat(object):
 		self.init_vbr()
 		self.init_fat()
 		self.init_root_dir()
+		self.init_allocation_bitmap()
 
 	def init_vbr(self):
 		self.vbr = Vbr(self.payload[0:512])
@@ -29,6 +31,12 @@ class Exfat(object):
 		root_dir_clusters_raw = self.get_clusters(root_dir_clusters)
 		root_dir_entries = self.get_entries(root_dir_clusters_raw)
 		self.root_dir = RootDir(root_dir_entries)
+
+	def init_allocation_bitmap(self):
+		for entry in self.root_dir.entries:
+			if entry.entry_type == ABDE:
+				self.allocation_bitmap = AllocationBitmap(self.get_clusters(self.fat.get_cluster_chain(entry.entry.first_cluster)), entry.entry.data_length)
+				break
 
 	def get_clusters(self, cluster_list):
 		clusters_data = ""
@@ -53,18 +61,22 @@ class Exfat(object):
 	# 	return result
 
 	def search_files(self, entries):
-		file_names = []
+		files = []
 		for entry in entries:
 			if isinstance(entry, FileEntrySet):
 				file_name = ""
 				for f in entry.fnede:
 					file_name = file_name + f.entry.file_name
-				file_names.append(file_name)
+				attributes = entry.fde.entry.get_attributes()
+				is_allocated = "" if self.is_cluster_allocated(entry.sede.entry.first_cluster) else "*"
+				files.append(is_allocated + file_name + " | " + attributes)
+				# Extra infos
+
 				if entry.fde.entry.is_directory():
 					entry_cluster_list = self.fat.get_cluster_chain(entry.sede.entry.first_cluster)
 					clusters_raw = self.get_clusters(entry_cluster_list)
-					file_names.append(self.search_files(self.get_entries(clusters_raw)))
-		return file_names
+					files.append(self.search_files(self.get_entries(clusters_raw)))
+		return files
 
 	def get_entries(self, clusters_raw):
 		# XXX Optimization needed here
@@ -93,3 +105,6 @@ class Exfat(object):
 			elif entry.entry_type != SEDE and entry.entry_type != FNEDE:
 				entries.append(entry)
 		return entries
+
+	def is_cluster_allocated(self, cluster):
+		return True if int(self.allocation_bitmap.allocation_bitmap[cluster-CLUSTER_START]) else False

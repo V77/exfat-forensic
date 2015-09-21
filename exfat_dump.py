@@ -6,7 +6,7 @@ import os
 
 
 #!!!!!!!!!!!!!!!! Attention !!!!!!!!!!!!!!#
-# Nommer vos fichiers en fonction des arguments déclarees ci-dessous
+# Nommer vos fichiers en fonction des arguments declarees ci-dessous
 
 
 
@@ -15,7 +15,7 @@ from mbr2 import *
 
 
 #========================================================#
-#	             Vérification arguments					 #
+#	             Verification arguments					 #
 #========================================================#
 
 if len(sys.argv) < 2:

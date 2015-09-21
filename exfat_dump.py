@@ -11,7 +11,8 @@ import os
 
 
 #Ajoutez vos codes :
-from mbr2 import *
+#from mbr2 import *
+from fsstat import *
 
 
 #========================================================#
@@ -39,7 +40,7 @@ if sys.argv[1] == 'mmls':
 	mmls(d.read()[0:512])
 	d.close()
 elif sys.argv[1] == 'fsstat':
-	print 'fsstat'
+	fsstat(d)
 	d.close()
 elif sys.argv[1] == 'fls':
 	print 'fls'

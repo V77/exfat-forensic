@@ -22,6 +22,7 @@ VGDE 	= 0xA0		# Volume GUID Directory Entry
 TFPDE	= 0xA1		# TexFAT Padding Directory Entry (TODO)
 WCACTDE	= 0xE2		# Windows CE Access Control Table Directory Entry (TODO)
 
+DELETED_FILE = 0x40
 
 class Vlde(object):
 	def __init__(self, payload):
@@ -29,10 +30,11 @@ class Vlde(object):
 		self.volume_label = payload[2:24]
 		self.reserved = payload[24:32]
 
-	def __str__(self):
-		return 	"character_count : " + str(self.character_count) + "\n" +\
+	def __repr__(self):
+		return 	"Volume Label Directory Entry\n" +\
+				"character_count : " + str(self.character_count) + "\n" +\
 				"volume_label : " + str(self.volume_label) + "\n" +\
-				"reserved : " + str(self.reserved) + "\n"
+				"reserved : " + str(self.reserved) + "\n\n"
 
 class Abde(object):
 	def __init__(self, payload):
@@ -41,11 +43,12 @@ class Abde(object):
 		self.first_cluster = struct.unpack("<I", payload[20:24])[0]
 		self.data_length = struct.unpack("<Q", payload[24:32])[0]
 
-	def __str__(self):
-		return 	"bitmap_flags : " + str(self.bitmap_flags) + "\n" +\
+	def __repr__(self):
+		return 	"Allocation Bitmap Directory Entry\n" +\
+				"bitmap_flags : " + str(self.bitmap_flags) + "\n" +\
 				"reserved : " + str(self.reserved) + "\n" +\
 				"first_cluster : " + str(self.first_cluster) + "\n" +\
-				"data_length : " + str(self.data_length) + "\n"
+				"data_length : " + str(self.data_length) + "\n\n"
 
 class Upctde(object):
 	def __init__(self, payload):
@@ -55,12 +58,13 @@ class Upctde(object):
 		self.first_cluster = struct.unpack("<I", payload[20:24])[0]
 		self.data_length = struct.unpack("<Q", payload[24:32])[0]
 
-	def __str__(self):
-		return 	"reserved1 : " + str(self.reserved1) + "\n" +\
+	def __repr__(self):
+		return 	"UP-Case Table Directory Entry\n" +\
+				"reserved1 : " + str(self.reserved1) + "\n" +\
 				"table_checksum : " + str(self.table_checksum) + "\n" +\
 				"reserved2 : " + str(self.reserved2) + "\n" +\
 				"first_cluster : " + str(self.first_cluster) + "\n" +\
-				"data_length : " + str(self.data_length) + "\n"
+				"data_length : " + str(self.data_length) + "\n\n"
 
 class Vgde(object):
 	def __init__(self, payload):
@@ -70,14 +74,16 @@ class Vgde(object):
 		# self.volume_guid = struct.unpack("<")
 		self.reserved = payload[22:32]
 
-	def __str__(self):
-		return 	"secondary_count : " + str(self.secondary_count) + "\n" +\
+	def __repr__(self):
+		return 	"Volume GUID Directory Entry\n" +\
+				"secondary_count : " + str(self.secondary_count) + "\n" +\
 				"set_checksum : " + str(self.set_checksum) + "\n" +\
 				"general_primary_flags : " + str(self.general_primary_flags) + "\n" +\
-				"reserved : " + str(self.reserved) + "\n"
+				"reserved : " + str(self.reserved) + "\n\n"
 
 class Fde(object):
 	def __init__(self, payload):
+		# exFAT Reverse Engineering Document Fields
 		self.secondary_count = struct.unpack("<B", payload[1:2])[0]
 		self.set_checksum = struct.unpack("<H", payload[2:4])[0]
 		self.file_attributes = struct.unpack("<H", payload[4:6])[0]
@@ -92,11 +98,15 @@ class Fde(object):
 		self.last_accessed_tz_offset = struct.unpack("<B", payload[24:25])[0]
 		self.reserved2 = payload[25:32]
 
+	def is_directory(self):
+		attributes = "{0:016b}".format(self.file_attributes)[::-1]
+		return True if int(attributes[4]) else False
 
-	def __str__(self):
-		return 	"secondary_count : " + str(self.secondary_count) + "\n" +\
+	def __repr__(self):
+		return 	"File Directory Entry\n" +\
+				"secondary_count : " + str(self.secondary_count) + "\n" +\
 				"set_checksum : " + str(self.set_checksum) + "\n" +\
-				"file_attributes : " + str(self.file_attributes) + "\n" +\
+				"file_attributes : " + "{0:016b}".format(self.file_attributes)[::-1] + "\n" +\
 				"reserved1 : " + str(self.reserved1) + "\n" +\
 				"create : " + str(self.create) + "\n" +\
 				"last_modified : " + str(self.last_modified) + "\n" +\
@@ -106,7 +116,7 @@ class Fde(object):
 				"create_tz_offset : " + str(self.create_tz_offset) + "\n" +\
 				"last_modified_tz_offset : " + str(self.last_modified_tz_offset) + "\n" +\
 				"last_accessed_tz_offset : " + str(self.last_accessed_tz_offset) + "\n" +\
-				"reserved2 : " + str(self.reserved2) + "\n"
+				"reserved2 : " + str(self.reserved2) + "\n\n"
 
 class Sede(object):
 	def __init__(self, payload):
@@ -120,8 +130,9 @@ class Sede(object):
 		self.first_cluster = struct.unpack("<I", payload[20:24])[0]
 		self.data_length = struct.unpack("<Q", payload[24:32])[0]
 
-	def __str__(self):
-		return 	"general_secondary_flags : " + str(self.general_secondary_flags) + "\n" +\
+	def __repr__(self):
+		return 	"Stream Extension Directory Entry\n" +\
+				"general_secondary_flags : " + str(self.general_secondary_flags) + "\n" +\
 				"reserved1 : " + str(self.reserved1) + "\n" +\
 				"name_length : " + str(self.name_length) + "\n" +\
 				"name_hash : " + str(self.name_hash) + "\n" +\
@@ -129,17 +140,17 @@ class Sede(object):
 				"valid_data_length : " + str(self.valid_data_length) + "\n" +\
 				"reserved3 : " + str(self.reserved3) + "\n" +\
 				"first_cluster : " + str(self.first_cluster) + "\n" +\
-				"data_length : " + str(self.data_length) + "\n"
+				"data_length : " + str(self.data_length) + "\n\n"
 
 class Fnede(object):
 	def __init__(self, payload):
 		self.general_secondary_flags = struct.unpack("<B", payload[1:2])[0]
 		self.file_name = payload[2:32]
 
-	def __str__(self):
-		return 	"general_secondary_flags : " + str(self.general_secondary_flags) + "\n" +\
-				"file_name : " + str(self.file_name) + "\n"
-
+	def __repr__(self):
+		return 	"File Name Extension Directory Entry\n" +\
+				"general_secondary_flags : " + str(self.general_secondary_flags) + "\n" +\
+				"file_name : " + str(self.file_name) + "\n\n"
 
 class Entry(object):
 	def __init__(self, payload):
@@ -170,3 +181,7 @@ class Entry(object):
 		else:
 			# print "[!] Unknown entry type."
 			self.entry = None
+
+	def __repr__(self):
+		if self.entry_type != 0x00 and self.entry_type != DELETED_FILE and self.entry_type != 0x41 and self.entry_type != 0x05:
+			return "(" + str(hex(self.entry_type)) + ") " + self.entry.__repr__()

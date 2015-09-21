@@ -34,86 +34,121 @@ vbrcontent = dump.read(512)
 #end of bootcode
 #130 debut disque 
 
-#--------------Fonctions Recuperation valeurs-------------
+#--------------Fonctions Recuperation valeurs-------------	
 
 def get_signature():
 	signature = vbrcontent[3:10]
-	print "Signature de la partition / Exemple : EXFAT"
-	print "---------------------------------------------------------------FIND :           ", signature
+	print "File System Type :",signature
 
 def get_addr_vbr1():
-	addr_vbr1 = vbrcontent[64:72]
-	#print "test" , addr_vbr1
-	print "Addresse de la VBR1 / exemple : 0x33"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[64:65].encode("hex")
-	#print "Sector Address", struct.unpack('<Q', addr_vbr1)
+	addr_vbr1 = vbrcontent[64:65].encode("hex")
+	print "Addresse de la VBR : ",vbrcontent[64:65].encode("hex")
+	#print "Sector Address", struct.unpack('<2', addr_vbr1)
+
+def get_partition_offset():
+	partition_offset=addr_vbr1 = struct.unpack("<Q", vbrcontent[64:72])[0]
+	print "Partition Offset : ",partition_offset
 
 def get_taille_vol():
-	taille_vol = vbrcontent[72:80]
-	print "Size of Total volume in sectors / Exemple : 0xED4D = 32mo"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[72:74].encode("hex")
-	#print "Size of Total volume in sectors" ,struct.unpack('<Q', taille_vol)
+	taille_vol = struct.unpack("<Q", vbrcontent[72:80])[0]
+	print "Taille de la partition : ", taille_vol
 
-def get_addr_fat1():
-	addr_fat1 = vbrcontent[80:83]
-	print "Addresse de la premiere FAT / Exemple Secteur 0x80 (+VBR)"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[80:81].encode("hex")
-	#print "Addresse de la premiere FAT", struct.unpack('<I', addr_fat1)
+def get_fat_offset():
+	fat_offset = struct.unpack("<I", vbrcontent[80:84])[0]
+	print "Fat Offset : ",fat_offset
 
 def get_fat_size():
-	fat_size = vbrcontent[84:100]
-	print "Taille de la FAT / Exemple 0x40 sectors"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[84:85].encode("hex")
-	#print struct.unpack('<I', fat_size)
+	fat_size = struct.unpack("<I", vbrcontent[84:88])[0]
+	print "Taille de la FAT : ", fat_size
 
-def get_addr_data_region():
-	addr_data_region = vbrcontent[88:91]
-	print "Data / Cluster region address / Exemple 0x100 (+VBR)"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[89:91].encode("hex")
-	#print struct.unpack('<I', addr_data_region)
+def get_cluster_heap_offset():
+	cluster_heap_offset = struct.unpack("<I", vbrcontent[88:92])[0]
+	print "Cluster Heap Offset : ", cluster_heap_offset
 
-def get_cluster_num():
-	cluster_num = vbrcontent[92:96]
-	print "Number of Cluster number in the cluster heap"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[92:94].encode("hex")
-	#print struct.unpack('<I', cluster_num)
+def get_cluster_count():
+	cluster_count = struct.unpack("<I", vbrcontent[92:96])[0]
+	print "Cluster Count : ",cluster_count
+
+def get_root_dir_first_cluster():
+	root_dir_first_cluster = struct.unpack("<I", vbrcontent[96:100])[0]
+	print "Root Dir First Cluster : ", root_dir_first_cluster
+
+def get_volume_serial_number():
+	volume_serial_number = struct.unpack("<I", vbrcontent[100:104])[0]
+	print "Volume Serial Number : ", volume_serial_number
+
+def get_file_system_revision():
+	file_system_revision = struct.unpack("<H", vbrcontent[104:106])[0]
+	print "File System Revision : ",file_system_revision
+
+def get_volume_flags():
+	volume_flags = struct.unpack("<H", vbrcontent[106:108])[0]
+	print "Volume Flags : ",volume_flags
 
 def get_bytes_per_sector():
-	bytes_per_sector = vbrcontent[108]
-	print "Bytes par secteur / Exemple 9 (2^9 = 512bytes)"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[108].encode("hex")
-	#print struct.unpack('<I', bytes_per_sector)
+	bytes_per_sector = struct.unpack("<B", vbrcontent[108:109])[0]
+	print "Bytes per sector : ",bytes_per_sector
 
+def get_sectors_per_cluster():
+	sectors_per_cluster = struct.unpack("<B", vbrcontent[109:110])[0]
+	print "Sectors per Cluster : ", sectors_per_cluster
 
-def get_sect_per_cluster():
-	bytes_per_cluster = vbrcontent[109]
-	print "Secteurs par cluster / Exemple 3 (2^3 = 8)"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[109].encode("hex")
-	#print struct.unpack('<I', bytes_per_sector)
+def get_number_of_fats():
+	number_of_fats = struct.unpack("<B", vbrcontent[110:111])[0]
+	print "Number of fats : ",number_of_fats
 
-def get_root_cluster():
-	root_cluster = vbrcontent[97:100]
-	print "Cluster adrress of root dir / Exemple 5"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[96:97].encode("hex")
-	#print struct.unpack('<I', root_cluster)
+def get_drive_select():
+	drive_select = struct.unpack("<B", vbrcontent[111:112])[0]
+	print "Drive select : ", drive_select
 
-def get_serial_num():
-	serial_num = vbrcontent[106:107]
-	print "Volume S/N"
-	print "---------------------------------------------------------------FIND :           ",vbrcontent[100:104].encode("hex")
-	#print struct.unpack('<I', serial_num)
+def get_percent_in_use():
+	percent_in_use = struct.unpack("<B", vbrcontent[112:113])[0]
+	print "Percent in use : ",percent_in_use
+
+def get_reserved():
+	reserved = vbrcontent[113:120]
+	print "Reserved : ", reserved
+
+def get_boot_code():
+	boot_code = vbrcontent[120:510]
+	print "Boot Code : ", boot_code
+
+def get_boot_signature():
+	boot_signature = struct.unpack("<H", vbrcontent[510:512])[0]
+	print "Boot Signature : ",boot_signature
+
 
 #------------Affiche Resultats-----------------
-print "Taille de la VBR: 12 sectors"
-print "----------------------------"
+print "FILE SYSTEM INFORMATION"
+print "------------------------------------------------"
 get_signature()
-get_addr_vbr1()
+print " "
+
+
+print "METADATA INFORMATION"
+print "------------------------------------------------"
+get_cluster_heap_offset()
+get_cluster_count()
+get_root_dir_first_cluster()
+
+print "CONTENT INFORMATION"
+print "------------------------------------------------"
+get_partition_offset()
 get_taille_vol()
-get_addr_fat1()
+get_fat_offset()
 get_fat_size()
-get_addr_data_region()
-get_cluster_num()
+get_volume_serial_number()
+get_file_system_revision()
+get_volume_flags()
 get_bytes_per_sector()
-get_sect_per_cluster()
-get_root_cluster()
-get_serial_num()
+get_sectors_per_cluster()
+get_number_of_fats()
+get_drive_select()
+get_percent_in_use()
+get_reserved()
+print "------------------------------------------------"
+get_boot_code()
+get_boot_signature()
+
+
+

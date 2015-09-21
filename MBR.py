@@ -105,7 +105,7 @@ if fin_mbr == '\x55\xaa': #END OF MBR
 		'\x00':'EMPTY',
 		'\x01':'FAT12',
 		'\x04':'FAT16',
-		'\x05':'MS_EXTENTED'
+		'\x05':'MS_EXTENTED',
 		'\x06':'FAT16',
 		'\x07':'NTFS', # 0x07 aussi EXFAT
 		'\x0B':'FAT32',

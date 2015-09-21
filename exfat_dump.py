@@ -9,9 +9,8 @@ import os
 # Nommer vos fichiers en fonction des arguments declarees ci-dessous
 
 
-
 #Ajoutez vos codes :
-#from mbr2 import *
+from mbr2 import *
 from fsstat import *
 
 
@@ -35,7 +34,7 @@ if len(sys.argv) < 3:
 filename = sys.argv[2]
 d=open(filename, 'rb')
 
-
+# Choix de l'option (case), si aucun choix ne match --> ERROR
 if sys.argv[1] == 'mmls':
 	mmls(d.read()[0:512])
 	d.close()

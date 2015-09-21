@@ -1,4 +1,3 @@
-
 #!/usr/bin/python
 
 import sys
@@ -130,7 +129,16 @@ if fin_mbr == '\x55\xaa': #END OF MBR
 		'\xA0':'HIBERNATION_1',
 		'\xA1':'HIBERNATION_2',
 		'\xA5':'FREEBSD',
-		'\xEE':'EFI'
+		'\xA6':'OPENBSD',
+		'\xA8':'MACOS',
+		'\xA9':'NETBSD',
+		'\xAB':'MAC_OX_BOOT',
+		'\xB7':'BSDI',
+		'\xB8':'BSDI_SWAP',
+		'\xEE':'EFI_GPT_DISK',
+		'\xEF':'EFI_SYSTEM_PARTITION',
+		'\xFB':'VMWARE_FILE_SYSTEM',
+		'\xFC':'VMWARE_SWAP'
 	}
 	
 	#Compteur partition

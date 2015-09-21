@@ -5,8 +5,9 @@ from FileEntrySet import *
 
 class RootDir(object):
 
-	def __init__(self, entries):
+	def __init__(self, entries, deleted_entries):
 		self.entries = entries
+		self.deleted_entries = deleted_entries
 
 	def __repr__(self):
 		output = ""

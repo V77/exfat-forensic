@@ -22,7 +22,9 @@ VGDE 	= 0xA0		# Volume GUID Directory Entry
 TFPDE	= 0xA1		# TexFAT Padding Directory Entry (TODO)
 WCACTDE	= 0xE2		# Windows CE Access Control Table Directory Entry (TODO)
 
-DELETED_FILE = 0x40
+DELETED_FDE 	= 0x05
+DELETED_SEDE 	= 0x40
+DELETED_FNEDE 	= 0x41
 
 class Vlde(object):
 	def __init__(self, payload):
@@ -105,6 +107,28 @@ class Fde(object):
 	def get_attributes(self):
 		return "{0:016b}".format(self.file_attributes)[::-1]
 
+	def get_create(self):
+		bitmask = "{0:032b}".format(self.create)
+		return self.extract_dos_date_time(bitmask)
+
+	def get_last_modified(self):
+		bitmask = "{0:032b}".format(self.last_modified)
+		return self.extract_dos_date_time(bitmask)
+
+	def get_last_accessed(self):
+		bitmask = "{0:032b}".format(self.last_accessed)
+		return self.extract_dos_date_time(bitmask)
+
+	def extract_dos_date_time(self, bitmask):
+		year = "{0:04d}".format(int(bitmask[0:7], 2) + 1980)			# Offset from year 1980
+		month = "{0:02d}".format(int(bitmask[7:11], 2))
+		day = "{0:02d}".format(int(bitmask[11:16], 2))
+		hour = "{0:02d}".format(int(bitmask[16:21], 2))
+		minute = "{0:02d}".format(int(bitmask[21:27], 2))
+		seconds = "{0:02d}".format(int(bitmask[27:32], 2)*2)			# Doubled seconds
+
+		return day + "/" + month + "/" + year + " " + hour + ":" + minute + ":" + seconds
+
 	def __repr__(self):
 		return 	"File Directory Entry\n" +\
 				"secondary_count : " + str(self.secondary_count) + "\n" +\
@@ -169,13 +193,13 @@ class Entry(object):
 		elif self.entry_type == UPCTDE:
 			self.entry = Upctde(payload)
 
-		elif self.entry_type == FDE:
+		elif self.entry_type == FDE or self.entry_type == DELETED_FDE:
 			self.entry = Fde(payload)
 
-		elif self.entry_type == SEDE or self.entry_type == DELETED_FILE:
+		elif self.entry_type == SEDE or self.entry_type == DELETED_SEDE:
 			self.entry = Sede(payload)
 
-		elif self.entry_type == FNEDE:
+		elif self.entry_type == FNEDE or self.entry_type == DELETED_FNEDE:
 			self.entry = Fnede(payload)
 
 		elif self.entry_type == VGDE:
@@ -186,5 +210,7 @@ class Entry(object):
 			self.entry = None
 
 	def __repr__(self):
-		if self.entry_type != 0x00 and self.entry_type != DELETED_FILE and self.entry_type != 0x41 and self.entry_type != 0x05:
+		if self.entry_type != 0x00:
 			return "(" + str(hex(self.entry_type)) + ") " + self.entry.__repr__()
+		else:
+			return ""

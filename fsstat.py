@@ -37,8 +37,9 @@ def fsstat(file1):
 
 	if ((sys.argv[2] == "-o")):
 		partition = 0
-
+		print p.first_sector
 		for p in partitions:
+			print p.first_sector
 			if p.first_sector == int(sys.argv[3]):
 				partition = p
 				break

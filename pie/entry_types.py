@@ -147,7 +147,7 @@ class Fde(object):
 
 class Sede(object):
 	def __init__(self, payload):
-		self.general_secondary_flags = struct.unpack("<B", payload[1:2])[0]
+		self.general_secondary_flags = struct.unpack(">B", payload[1:2])[0]
 		self.reserved1 = payload[2:3]
 		self.name_length = struct.unpack("<B", payload[3:4])[0]
 		self.name_hash = struct.unpack("<H", payload[4:6])[0]
@@ -156,6 +156,13 @@ class Sede(object):
 		self.reserved3 = payload[16:20]
 		self.first_cluster = struct.unpack("<I", payload[20:24])[0]
 		self.data_length = struct.unpack("<Q", payload[24:32])[0]
+
+	def get_general_secondary_flags(self):
+		return "{0:016b}".format(self.general_secondary_flags)[::-1]
+
+	def is_contiguous(self):
+		bitmask = self.get_general_secondary_flags()
+		return True if int(bitmask[1:2]) else False
 
 	def __repr__(self):
 		return 	"Stream Extension Directory Entry\n" +\

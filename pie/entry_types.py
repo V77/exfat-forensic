@@ -29,7 +29,7 @@ DELETED_FNEDE 	= 0x41
 class Vlde(object):
 	def __init__(self, payload):
 		self.character_count = struct.unpack("<B", payload[1])[0]
-		self.volume_label = payload[2:26]
+		self.volume_label = payload[2:26].replace("\x00", "")
 		self.reserved = payload[26:32]
 
 	def __repr__(self):
@@ -172,7 +172,7 @@ class Sede(object):
 class Fnede(object):
 	def __init__(self, payload):
 		self.general_secondary_flags = struct.unpack("<B", payload[1:2])[0]
-		self.file_name = payload[2:32]
+		self.file_name = payload[2:32].replace("\x00", "")
 
 	def __repr__(self):
 		return 	"File Name Extension Directory Entry\n" +\

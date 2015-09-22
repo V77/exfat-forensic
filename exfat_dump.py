@@ -30,15 +30,19 @@ if len(sys.argv) < 3:
 #	               Chargement fichier					 #
 #========================================================#
 
-#Ouverture du fichier appeler par l'argument
-filename = sys.argv[2]
-d=open(filename, 'rb')
 
 # Choix de l'option (case), si aucun choix ne match --> ERROR
 if sys.argv[1] == 'mmls':
+	#Ouverture du fichier appeler par l'argument
+	filename = sys.argv[2]
+	d=open(filename, 'rb')
 	mmls(d.read()[0:512])
 	d.close()
 elif sys.argv[1] == 'fsstat':
+	#Ouverture du fichier appeler par l'argument
+	filename = sys.argv[4]
+	d=open(filename, 'rb')
+
 	fsstat(d)
 	d.close()
 elif sys.argv[1] == 'fls':
@@ -52,5 +56,4 @@ elif sys.argv[1] == 'icat':
 	d.close()
 else:
 	print "ERROR : Entrez une option valide !"
-	d.close()
 	sys.exit(1)

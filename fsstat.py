@@ -3,21 +3,10 @@
 import sys
 import struct
 import os
-from mbr2 import *
+from mbr3 import *
 
-#--------Fonction ffstat avec argument file1 (fichier dump a analyser)-------
-def fsstat(file1):
 
-#--------Ouverture Dump----------
-	dump = file1
-	get_off_part()
-	vbr_offset = table_off_part
-	vbr_offset = 0x00006600
-	dump.seek(vbr_offset)
-	vbrcontent = dump.read(512)
 
-#---------vbrcontent contient maintenant les 512 octets suivant l'offset de la vbr
-#---------nous pouvons donc travailler sur ce fichier pour recuperer les valeurs recherchees
 
 #---------Informations recherche dans VBR-------------------------
 # exFAT VBR
@@ -41,73 +30,103 @@ def fsstat(file1):
 #bootsignature emplacement [510:512]
 
 
-#------------Affiche Resultats-----------------
-	print "FILE SYSTEM INFORMATION"
-	print "------------------------------------------------"
-	signature = vbrcontent[3:10]
-	print "File System Type :",signature
-	print " "
-#---on recupere la signature de la partition situe au 3eme jusqu au 10eme emplacement de notre variable vbrcontent
-
-	print "METADATA INFORMATION"
-	print "------------------------------------------------"
-	cluster_heap_offset = struct.unpack("<I", vbrcontent[88:92])[0]
-	print "Cluster Heap Offset : ", cluster_heap_offset
-#----on recupere l'offset du cluster et on le retourne (Little endian vers big endian) pour pouvoir l'afficher correctement
-
-	cluster_count = struct.unpack("<I", vbrcontent[92:96])[0]
-	print "Cluster Count : ",cluster_count
-
-	root_dir_first_cluster = struct.unpack("<I", vbrcontent[96:100])[0]
-	print "Root Dir First Cluster : ", root_dir_first_cluster
 
 
+#--------Fonction ffstat avec argument file1 (fichier dump a analyser)-------
+def fsstat(file1):
 
-	print "CONTENT INFORMATION"
-	print "------------------------------------------------"
-	partition_offset=addr_vbr1 = struct.unpack("<Q", vbrcontent[64:72])[0]
-	print "Partition Offset : ",partition_offset
+	if ((sys.argv[2] == "-o")):
+		partition = 0
 
-	taille_vol = struct.unpack("<Q", vbrcontent[72:80])[0]
-	print "Taille de la partition : ", taille_vol
+		for p in partitions:
+			if p.first_sector == int(sys.argv[3]):
+				partition = p
+				break
 
-	fat_offset = struct.unpack("<I", vbrcontent[80:84])[0]
-	print "Fat Offset : ",fat_offset
+		if partition != 0:
 
-	fat_size = struct.unpack("<I", vbrcontent[84:88])[0]
-	print "Taille de la FAT : ", fat_size
+			if partition.type == 0x07:
+				dump = file1
+				vbr_offset = int(sys.argv[3])
+				vbr_offset = vbr_offset * 512
+				print vbr_offset
+				dump.seek(vbr_offset)
+				vbrcontent = dump.read(512)
 
-	volume_serial_number = struct.unpack("<I", vbrcontent[100:104])[0]
-	print "Volume Serial Number : ", volume_serial_number
+				#------------Affiche Resultats-----------------
+				print "FILE SYSTEM INFORMATION"
+				print "------------------------------------------------"
+				signature = vbrcontent[3:10]
+				print "File System Type :",signature
+				print " "
+				#---on recupere la signature de la partition situe au 3eme jusqu au 10eme emplacement de notre variable vbrcontent
 
-	file_system_revision = struct.unpack("<H", vbrcontent[104:106])[0]
-	print "File System Revision : ",file_system_revision
+				print "METADATA INFORMATION"
+				print "------------------------------------------------"
+				cluster_heap_offset = struct.unpack("<I", vbrcontent[88:92])[0]
+				print "Cluster Heap Offset : ", cluster_heap_offset
+				#----on recupere l'offset du cluster et on le retourne (Little endian vers big endian) pour pouvoir l'afficher correctement
 
-	volume_flags = struct.unpack("<H", vbrcontent[106:108])[0]
-	print "Volume Flags : ",volume_flags
+				cluster_count = struct.unpack("<I", vbrcontent[92:96])[0]
+				print "Cluster Count : ",cluster_count
 
-	bytes_per_sector = struct.unpack("<B", vbrcontent[108:109])[0]
-	print "Bytes per sector : ",bytes_per_sector
+				root_dir_first_cluster = struct.unpack("<I", vbrcontent[96:100])[0]
+				print "Root Dir First Cluster : ", root_dir_first_cluster
 
-	sectors_per_cluster = struct.unpack("<B", vbrcontent[109:110])[0]
-	print "Sectors per Cluster : ", sectors_per_cluster
+				print "CONTENT INFORMATION"
+				print "------------------------------------------------"
+				partition_offset=addr_vbr1 = struct.unpack("<Q", vbrcontent[64:72])[0]
+				print "Partition Offset : ",partition_offset
 
-	number_of_fats = struct.unpack("<B", vbrcontent[110:111])[0]
-	print "Number of fats : ",number_of_fats
+				taille_vol = struct.unpack("<Q", vbrcontent[72:80])[0]
+				print "Taille de la partition : ", taille_vol
 
-	drive_select = struct.unpack("<B", vbrcontent[111:112])[0]
-	print "Drive select : ", drive_select
+				fat_offset = struct.unpack("<I", vbrcontent[80:84])[0]
+				print "Fat Offset : ",fat_offset
 
-	percent_in_use = struct.unpack("<B", vbrcontent[112:113])[0]
-	print "Percent in use : ",percent_in_use
+				fat_size = struct.unpack("<I", vbrcontent[84:88])[0]
+				print "Taille de la FAT : ", fat_size
 
-	reserved = vbrcontent[113:120]
-	print "Reserved : ", reserved
+				volume_serial_number = struct.unpack("<I", vbrcontent[100:104])[0]
+				print "Volume Serial Number : ", volume_serial_number
 
+				file_system_revision = struct.unpack("<H", vbrcontent[104:106])[0]
+				print "File System Revision : ",file_system_revision
 
-	print "------------------------------------------------"
-	boot_code = vbrcontent[120:510]
-	print "Boot Code : ", boot_code
+				volume_flags = struct.unpack("<H", vbrcontent[106:108])[0]
+				print "Volume Flags : ",volume_flags
 
-	boot_signature = struct.unpack("<H", vbrcontent[510:512])[0]
-	print "Boot Signature : ",boot_signature
+				bytes_per_sector = struct.unpack("<B", vbrcontent[108:109])[0]
+				print "Bytes per sector : ",bytes_per_sector
+
+				sectors_per_cluster = struct.unpack("<B", vbrcontent[109:110])[0]
+				print "Sectors per Cluster : ", sectors_per_cluster
+
+				number_of_fats = struct.unpack("<B", vbrcontent[110:111])[0]
+				print "Number of fats : ",number_of_fats
+
+				drive_select = struct.unpack("<B", vbrcontent[111:112])[0]
+				print "Drive select : ", drive_select
+
+				percent_in_use = struct.unpack("<B", vbrcontent[112:113])[0]
+				print "Percent in use : ",percent_in_use
+
+				reserved = vbrcontent[113:120]
+				print "Reserved : ", reserved
+
+				print "------------------------------------------------"
+				boot_code = vbrcontent[120:510]
+				print "Boot Code : ", boot_code
+
+				boot_signature = struct.unpack("<H", vbrcontent[510:512])[0]
+				print "Boot Signature : ",boot_signature
+			else:
+				print "ERRREUR"
+				exit(1)
+		else:
+			print "invalid IMAGE"
+			exit(1)
+
+	else:
+		print "pas de -o detecte"
+		exit(1)

@@ -10,7 +10,7 @@ import os
 
 
 #Ajoutez vos codes :
-from mbr2 import *
+from mbr3 import *
 from fsstat import *
 
 
@@ -33,10 +33,10 @@ if len(sys.argv) < 3:
 #Ouverture du fichier appeler par l'argument
 filename = sys.argv[2]
 d=open(filename, 'rb')
-
+init_part(d.read()[0:512])
 # Choix de l'option (case), si aucun choix ne match --> ERROR
 if sys.argv[1] == 'mmls':
-	mmls(d.read()[0:512])
+	mmls()
 	d.close()
 elif sys.argv[1] == 'fsstat':
 	fsstat(d)

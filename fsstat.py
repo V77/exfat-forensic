@@ -49,7 +49,6 @@ def fsstat(file1):
 				dump = file1
 				vbr_offset = int(sys.argv[3])
 				vbr_offset = vbr_offset * 512
-				print vbr_offset
 				dump.seek(vbr_offset)
 				vbrcontent = dump.read(512)
 

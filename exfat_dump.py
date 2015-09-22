@@ -10,7 +10,7 @@ import os
 
 
 #Ajoutez vos codes :
-from mbr3 import *
+from mbr import *
 from fsstat import *
 from icat import *
 

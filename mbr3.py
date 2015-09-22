@@ -6,11 +6,39 @@ import os
 
 class Partition(object):
 
+	#========================================================#
+	#	            Initialisation Partitions				 #
+	#========================================================#
+
+		#------+------------------------+----------------+
+		# HEX  |       DESC             | Size en Octets |
+		#------+------------------------+----------------+
+		# 01BE | Bootable (oui = 0x80)  |		1	(0)	 |
+		#------+------------------------+----------------+
+		# 01BF | obsolete				|		3  (1-3) |
+		#------+------------------------+----------------+
+		# 01C2 |Type Part, 7 = exFAT    |		1	4	 |
+		#------+------------------------+----------------+
+		# 01C3 | obsolete				|		3	5-7	 |
+		#------+------------------------+----------------+
+		# 01C6 | @ 1er secteur part		|		4	8-11 |
+		#------+------------------------+----------------+
+		# 01CA | nb secteur dans part   |		4 12-15	 |
+		#------+------------------------+----------------+
+		# Total|						|	  16 (x4)	 |
+		#------+------------------------+----------------+
+
 	def __init__(self, payload):
 		self.bootable = struct.unpack("<B", payload[0:1])[0]
 		self.starting_chs = payload[1:4]
 		self.type = struct.unpack("<B", payload[4:5])[0]
 		self.ending_chs = payload[5:8]
+	#========================================================#
+	#	           		Analyse @ secteur 					 #
+	#========================================================#
+	# !!!!!!! Attention little endian !!!!!!!
+
+		# struct.unpack --> "<" pour little endian
 		self.first_sector = struct.unpack("<I", payload[8:12])[0]
 		self.size_in_sector = struct.unpack("<I", payload[12:16])[0]
 
@@ -21,13 +49,6 @@ class Partition(object):
 				"\t\tending_chs : " + str(self.ending_chs) + "\n" +\
 				"\t\tfirst_sector : " + str(hex(self.first_sector)) + "\n" +\
 				"\t\tsize_in_sector : " + str(hex(self.size_in_sector)) + "\n"
-
-#class Partition():
-#	def __init__(self,payload):
-		# self.bootable = payload[0]
-		# self.type = payload[4]
-		# self.first_sector = payload[8:12]
-		# self.size_in_sector = payload[12:16]
 
 
 # Tableau partition physique
@@ -68,39 +89,9 @@ def init_part(content):
 		#========================================================#
 
 
-		#print len(content)
-		#print type(content)
-		#print content.encode("hex")
-
-		#print len(fin_mbr)
-		#print type(fin_mbr)
-		#print fin_mbr.encode("hex")
-
 		# END OF MBR
 		if fin_mbr == '\x55\xaa':
 
-			#========================================================#
-			#	            Initialisation Partitions				 #
-			#========================================================#
-
-
-				#------+------------------------+----------------+
-				# HEX  |       DESC             | Size en Octets |
-				#------+------------------------+----------------+
-				# 01BE | Bootable (oui = 0x80)  |		1	(0)	 |
-				#------+------------------------+----------------+
-				# 01BF | obsolete				|		3  (1-3) |
-				#------+------------------------+----------------+
-				# 01C2 |Type Part, 7 = exFAT    |		1	4	 |
-				#------+------------------------+----------------+
-				# 01C3 | obsolete				|		3	5-7	 |
-				#------+------------------------+----------------+
-				# 01C6 | @ 1er secteur part		|		4	8-11 |
-				#------+------------------------+----------------+
-				# 01CA | nb secteur dans part   |		4 12-15	 |
-				#------+------------------------+----------------+
-				# Total|						|	  16 (x4)	 |
-				#------+------------------------+----------------+
 
 			# Definition structure table des partition + ajout dans le tebleau des partitions
 			partitions.append(Partition(part_table[0:16]))
@@ -108,26 +99,6 @@ def init_part(content):
 			partitions.append(Partition(part_table[32:48]))
 			partitions.append(Partition(part_table[48:64]))
 
-			#Pour une partition dans le tableau de partitions
-			#for partition in partitions:
-
-			#========================================================#
-			#	            Verification type partition				 #
-			#========================================================#
-
-
-				# Si type n'est pas EMPTY alors
-				#if partition.type != '\x00':
-
-
-			#========================================================#
-			#	           		Analyse @ secteur 					 #
-			#========================================================#
-			# !!!!!!! Attention little endian !!!!!!!
-
-					# struct.unpack --> "<" pour little endian
-					#partition.first_sector = struct.unpack('<I',partition.first_sector)[0]
-					#partition.size_in_sector = struct.unpack('<I',partition.size_in_sector)[0]
 
 		# Si fin des 512 bites != a 55aa :
 		else:
@@ -185,10 +156,8 @@ def mmls():
 
 		for partition in partitions:
 
-
 			# Decommente pour voir hexa partition :
 			#print i.encode("hex")
-
 
 		#========================================================#
 		#	           Verification partition boot				 #
@@ -209,15 +178,6 @@ def mmls():
 
 			# Si non vide Alors
 			if partition.type != 0x00:
-
-			#print type_dict[type]
-			#print type
-
-
-		#========================================================#
-		#	           		Analyse @ secteur 					 #
-		#========================================================#
-		# !!!!!!! Attention little endian !!!!!!!
 
 				# struct.unpack --> "<" pour little endian
 				end_sect_part = partition.size_in_sector + partition.first_sector - 1

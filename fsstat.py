@@ -3,7 +3,7 @@
 import sys
 import struct
 import os
-from mbr import *
+# from mbr import *
 
 
 
@@ -33,12 +33,13 @@ from mbr import *
 
 
 #--------Fonction ffstat avec argument file1 (fichier dump a analyser)-------
-def fsstat(file1):
+def fsstat(file1, partitions):
 
 	if ((sys.argv[2] == "-o")):
 		partition = 0
-
+		print partitions
 		for p in partitions:
+			print p
 			if p.first_sector == int(sys.argv[3]):
 				partition = p
 				break

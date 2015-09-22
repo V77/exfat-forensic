@@ -57,7 +57,40 @@ class Exfat(object):
 			cluster_size_in_bytes = (2**self.vbr.sectors_per_cluster) * (2**self.vbr.bytes_per_sector)
 			return self.payload[cluster_start:cluster_start + data_length]
 
+	def get_file_entry_sets(self, entries):
+		for entry in entries:
+			if isinstance(entry, FileEntrySet):
+				first_cluster = int(entry.sede.entry.first_cluster)
+				self.file_entry_sets[first_cluster] = entry
+
+				if entry.fde.entry.is_directory():
+					entry_cluster_list = self.fat.get_cluster_chain(entry.sede.entry.first_cluster)
+					clusters_raw = self.get_clusters(entry_cluster_list, entry.sede.entry.is_contiguous(), entry.sede.entry.data_length)
+					self.get_file_entry_sets(self.get_entries(clusters_raw))
+
+		return None
+
 	# XXX Refactor ALL *files*/*deleted_files* methods below
+
+	def list_root_directory_files(self):
+		files = []
+		for entry in self.root_dir.entries:
+			if isinstance(entry, Entry):
+				if entry.entry_type == VLDE:
+					files.append("r/r : " + entry.entry.volume_label + " (Volume Label Directory)")
+				if entry.entry_type == ABDE:
+					files.append("r/r : " + str(entry.entry.first_cluster) + " $ALLOC_BITMAP")
+				if entry.entry_type == UPCTDE:
+					files.append("r/r : " + str(entry.entry.first_cluster) + " $UPCASE_TABLE")
+			elif isinstance(entry, FileEntrySet):
+				file_name = ""
+				for f in entry.fnede:
+					file_name = file_name + f.entry.file_name
+
+				is_file = "r/r" if not entry.fde.entry.is_directory() else "d/d"
+				first_cluster = " " + str(int(entry.sede.entry.first_cluster)) + ": "
+				files.append(is_file + first_cluster + file_name)
+		return files
 
 	def list_files(self):
 		return self.search_files(self.root_dir.entries)
@@ -86,19 +119,6 @@ class Exfat(object):
 					clusters_raw = self.get_clusters(entry_cluster_list, entry.sede.entry.is_contiguous(), entry.sede.entry.data_length)
 					files.append(self.search_files(self.get_entries(clusters_raw)))
 		return files
-
-	def get_file_entry_sets(self, entries):
-		for entry in entries:
-			if isinstance(entry, FileEntrySet):
-				first_cluster = int(entry.sede.entry.first_cluster)
-				self.file_entry_sets[first_cluster] = entry
-
-				if entry.fde.entry.is_directory():
-					entry_cluster_list = self.fat.get_cluster_chain(entry.sede.entry.first_cluster)
-					clusters_raw = self.get_clusters(entry_cluster_list, entry.sede.entry.is_contiguous(), entry.sede.entry.data_length)
-					self.get_file_entry_sets(self.get_entries(clusters_raw))
-
-		return None
 
 	def search_deleted_files(self, entries):
 		files = []

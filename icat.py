@@ -2,9 +2,9 @@
 
 import sys
 
-from mbr3 import *
+from mbr import *
 from Exfat import *
-    
+
 def icat(image):
 
     # On verifie que le premier argument est bien '-o'

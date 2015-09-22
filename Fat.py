@@ -33,3 +33,11 @@ class Fat(object):
 			return [cluster] + self.get_cluster_chain(self.fat[cluster])
 		else:
 			return []
+
+	def __repr__(self):
+		output = "|"
+
+		for idx, entry in enumerate(self.fat):
+			if entry != 0x0:
+				output += str(idx) + ":" + str(hex(entry)) + "|"
+		return output

@@ -12,6 +12,7 @@ import os
 #Ajoutez vos codes :
 from mbr3 import *
 from fsstat import *
+from icat import *
 
 
 #========================================================#
@@ -33,17 +34,18 @@ if len(sys.argv) < 3:
 
 # Choix de l'option (case), si aucun choix ne match --> ERROR
 if sys.argv[1] == 'mmls':
-	#Ouverture du fichier appeler par l'argument
+	#Ouverture du fichier appele par l'argument
 	filename = sys.argv[2]
 	d=open(filename, 'rb')
 	mmls(d.read()[0:512])
 	d.close()
 elif sys.argv[1] == 'fsstat':
-	#Ouverture du fichier appeler par l'argument
+	#Ouverture du fichier appele par l'argument
 	filename = sys.argv[4]
 	d=open(filename, 'rb')
-	init_part(d.read()[0:512])
-	fsstat(d)
+	image = d.read()
+	init_part(image[0:512])
+	fsstat(image)
 	d.close()
 elif sys.argv[1] == 'fls':
 	print 'fls'
@@ -52,7 +54,15 @@ elif sys.argv[1] == 'istat':
 	print 'istat'
 	d.close()
 elif sys.argv[1] == 'icat':
-	print 'icat'
+	argc = len(sys.argv)
+	if(argc < 6):
+		print "Arguments missing"
+		exit(1)
+	filename = sys.argv[4]
+	d=open(filename, 'rb')
+	image = d.read()
+	init_part(image[0:512])
+	icat(image)
 	d.close()
 else:
 	print "ERROR : Entrez une option valide !"

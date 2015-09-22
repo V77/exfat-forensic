@@ -121,12 +121,12 @@ def fsstat(file1):
 				boot_signature = struct.unpack("<H", vbrcontent[510:512])[0]
 				print "Boot Signature : ",boot_signature
 			else:
-				print "ERRREUR"
+				print "Invalid Offset"
 				exit(1)
 		else:
 			print "invalid IMAGE"
 			exit(1)
 
 	else:
-		print "pas de -o detecte"
+		print "invalid argument"
 		exit(1)

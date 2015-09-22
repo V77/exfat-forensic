@@ -4,18 +4,36 @@ import sys
 import struct
 import os
 
-class Partition():
+class Partition(object):
 
-	def __init__(self,payload):
+	def __init__(self, payload):
+		self.bootable = struct.unpack("<B", payload[0:1])[0]
+		self.starting_chs = payload[1:4]
+		self.type = struct.unpack("<B", payload[4:5])[0]
+		self.ending_chs = payload[5:8]
+		self.first_sector = struct.unpack("<I", payload[8:12])[0]
+		self.size_in_sector = struct.unpack("<I", payload[12:16])[0]
 
-		self.boot_part = payload[0]
-		self.type_part = payload[4]
-		self.first_sect_part = payload[8:12]
-		self.nb_sect_part = payload[12:16]
+	def __repr__(self):
+		return 	"\n\t\tbootable : " + str(hex(self.bootable)) + "\n" +\
+				"\t\tstarting_chs : " + str(self.starting_chs) + "\n" +\
+				"\t\ttype : " + str(hex(self.type)) + "\n" +\
+				"\t\tending_chs : " + str(self.ending_chs) + "\n" +\
+				"\t\tfirst_sector : " + str(hex(self.first_sector)) + "\n" +\
+				"\t\tsize_in_sector : " + str(hex(self.size_in_sector)) + "\n"
+
+#class Partition():
+#	def __init__(self,payload):
+		# self.bootable = payload[0]
+		# self.type = payload[4]
+		# self.first_sector = payload[8:12]
+		# self.size_in_sector = payload[12:16]
 
 
 # Tableau partition physique
 partitions=[]
+
+# Initialisation de la partition, appeler par tous les autres programmes
 def init_part(content):
 	#========================================================#
 	#	           Initialisation Variable MBR				 #
@@ -84,22 +102,22 @@ def init_part(content):
 				# Total|						|	  16 (x4)	 |
 				#------+------------------------+----------------+
 
-			# Definition structure table des partition
+			# Definition structure table des partition + ajout dans le tebleau des partitions
 			partitions.append(Partition(part_table[0:16]))
 			partitions.append(Partition(part_table[16:32]))
 			partitions.append(Partition(part_table[32:48]))
 			partitions.append(Partition(part_table[48:64]))
 
-
-			for partition in partitions:
+			#Pour une partition dans le tableau de partitions
+			#for partition in partitions:
 
 			#========================================================#
 			#	            Verification type partition				 #
 			#========================================================#
 
 
-				# Si non vide Alors
-				if partition.type_part != '\x00':
+				# Si type n'est pas EMPTY alors
+				#if partition.type != '\x00':
 
 
 			#========================================================#
@@ -108,8 +126,8 @@ def init_part(content):
 			# !!!!!!! Attention little endian !!!!!!!
 
 					# struct.unpack --> "<" pour little endian
-					partition.first_sect_part = struct.unpack('<I',partition.first_sect_part)[0]
-					partition.nb_sect_part = struct.unpack('<I',partition.nb_sect_part)[0]
+					#partition.first_sector = struct.unpack('<I',partition.first_sector)[0]
+					#partition.size_in_sector = struct.unpack('<I',partition.size_in_sector)[0]
 
 		# Si fin des 512 bites != a 55aa :
 		else:
@@ -119,44 +137,44 @@ def init_part(content):
 def mmls():
 
 		# Dictionnaire type de partition
-		type_part_dict = {
-			'\x00':'EMPTY',
-			'\x01':'FAT12',
-			'\x04':'FAT16',
-			'\x05':'MS_EXTENTED',
-			'\x06':'FAT16',
-			'\x07':'NTFS', # 0x07 aussi EXFAT
-			'\x0B':'FAT32',
-			'\x0C':'FAT32',
-			'\x0E':'FAT16',
-			'\x0F':'MS_EXTENTED',
-			'\x11':'HIDDEN_FAT12',
-			'\x14':'HIDDEN_FAT16',
-			'\x16':'HIDDEN_FAT16',
-			'\x1B':'HIDDEN_FAT32',
-			'\x1C':'HIDDEN_FAT32',
-			'\x1E':'HIDDEN_FAT16',
-			'\x42':'MS_MBR_DYNAMIC',
-			'\x82':'SOLARIS_X86',
-			'\x82':'LINUX_SWAP',
-			'\x83':'LINUX',
-			'\x84':'HIBERNATION',
-			'\x85':'LINUX_EXTENDED',
-			'\x86':'NTFS_VOLUME_SET',
-			'\x87':'NTFS_VOLUME_SET_1',
-			'\xA0':'HIBERNATION_1',
-			'\xA1':'HIBERNATION_2',
-			'\xA5':'FREEBSD',
-			'\xA6':'OPENBSD',
-			'\xA8':'MACOS',
-			'\xA9':'NETBSD',
-			'\xAB':'MAC_OX_BOOT',
-			'\xB7':'BSDI',
-			'\xB8':'BSDI_SWAP',
-			'\xEE':'EFI_GPT_DISK',
-			'\xEF':'EFI_SYSTEM_PARTITION',
-			'\xFB':'VMWARE_FILE_SYSTEM',
-			'\xFC':'VMWARE_SWAP'
+		type_dict = {
+			0x00 :'EMPTY',
+			0x01 :'FAT12',
+			0x04 :'FAT16',
+			0x05 :'MS_EXTENTED',
+			0x06 :'FAT16',
+			0x07 :'NTFS', # 0x07 aussi EXFAT
+			0x0B :'FAT32',
+			0x0C :'FAT32',
+			0x0E :'FAT16',
+			0x0F :'MS_EXTENTED',
+			0x11 :'HIDDEN_FAT12',
+			0x14 :'HIDDEN_FAT16',
+			0x16 :'HIDDEN_FAT16',
+			0x1B :'HIDDEN_FAT32',
+			0x1C :'HIDDEN_FAT32',
+			0x1E :'HIDDEN_FAT16',
+			0x42 :'MS_MBR_DYNAMIC',
+			0x82 :'SOLARIS_X86',
+			0x82 :'LINUX_SWAP',
+			0x83 :'LINUX',
+			0x84 :'HIBERNATION',
+			0x85 :'LINUX_EXTENDED',
+			0x86 :'NTFS_VOLUME_SET',
+			0x87 :'NTFS_VOLUME_SET_1',
+			0xA0 :'HIBERNATION_1',
+			0xA1 :'HIBERNATION_2',
+			0xA5 :'FREEBSD',
+			0xA6 :'OPENBSD',
+			0xA8 :'MACOS',
+			0xA9 :'NETBSD',
+			0xAB :'MAC_OX_BOOT',
+			0xB7 :'BSDI',
+			0xB8 :'BSDI_SWAP',
+			0xEE :'EFI_GPT_DISK',
+			0xEF :'EFI_SYSTEM_PARTITION',
+			0xFB :'VMWARE_FILE_SYSTEM',
+			0xFC :'VMWARE_SWAP'
 		}
 
 		# Compteur partition
@@ -177,8 +195,8 @@ def mmls():
 		#========================================================#
 
 
-			#print repr(boot_part)
-			if partition.boot_part == "\x80":
+			#print repr(bootable)
+			if partition.bootable == 0x80:
 				boot_part_res = "Yes"
 			else:
 				boot_part_res = "No"
@@ -190,10 +208,10 @@ def mmls():
 
 
 			# Si non vide Alors
-			if partition.type_part != '\x00':
+			if partition.type != 0x00:
 
-			#print type_part_dict[type_part]
-			#print type_part
+			#print type_dict[type]
+			#print type
 
 
 		#========================================================#
@@ -202,15 +220,17 @@ def mmls():
 		# !!!!!!! Attention little endian !!!!!!!
 
 				# struct.unpack --> "<" pour little endian
-				end_sect_part = partition.nb_sect_part + partition.first_sect_part - 1
+				end_sect_part = partition.size_in_sector + partition.first_sector - 1
 
 
 				#Format resultat
-				print str(j)+"	"+boot_part_res+"	{0:010d}".format(partition.first_sect_part)+"	{0:010d}".format(partition.nb_sect_part)+"	{0:010d}".format(end_sect_part)+"	"+type_part_dict[partition.type_part]+" (0x"+partition.type_part.encode("hex")+")"
+				#     "Part         	Boot	     				Start										End											Length								Description"
+				print str(j)+"	"+boot_part_res+"	{0:010d}".format(partition.first_sector)+"	{0:010d}".format(partition.size_in_sector)+"	{0:010d}".format(end_sect_part)+"	"+type_dict[partition.type]+" (0x"+str(partition.type)+")"
 
 				j=j+1
 
 			else:
 				#Format resultat type partition NULL
-				print str(j)+"	"+boot_part_res+"	----------"+"	----------"+"	----------	"+type_part_dict[partition.type_part]
+				#	 "Part			  Boot			  Start				End			  Length				Description"
+				print str(j)+"	"+boot_part_res+"	----------"+"	----------"+"	----------	"+type_dict[partition.type]
 				j=j+1

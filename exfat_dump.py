@@ -42,7 +42,6 @@ elif sys.argv[1] == 'fsstat':
 	#Ouverture du fichier appeler par l'argument
 	filename = sys.argv[4]
 	d=open(filename, 'rb')
-
 	fsstat(d)
 	d.close()
 elif sys.argv[1] == 'fls':

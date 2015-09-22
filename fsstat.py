@@ -3,21 +3,23 @@
 import sys
 import struct
 import os
+from mbr2 import *
 
-
-#--------Fonction ffstat avec argument file1 (fichier dump à analyser)-------
+#--------Fonction ffstat avec argument file1 (fichier dump a analyser)-------
 def fsstat(file1):
 
 #--------Ouverture Dump----------
 	dump = file1
+	get_off_part()
+	vbr_offset = table_off_part
 	vbr_offset = 0x00006600
 	dump.seek(vbr_offset)
 	vbrcontent = dump.read(512)
 
 #---------vbrcontent contient maintenant les 512 octets suivant l'offset de la vbr
-#---------nous pouvons donc travailler sur ce fichier pour recuperer les valeurs recherchées
+#---------nous pouvons donc travailler sur ce fichier pour recuperer les valeurs recherchees
 
-#---------Informations recerche dans VBR-------------------------
+#---------Informations recherche dans VBR-------------------------
 # exFAT VBR
 #Taille de la VBR = 12 secteurs
 #Signature emplacement [3:10]
@@ -29,7 +31,7 @@ def fsstat(file1):
 #Offset de la fat emplacement [80:84]
 #taille de la fat emplacement [84:88]
 #Volume serial number emplacement [100:104]
-#ytes per sector emplacement [108:109]
+#Bytes per sector emplacement [108:109]
 #sectors per cluster emplacement [109:110]
 #nombre de fat emplacement [110:111]
 #drive select emplacement [111:112]
@@ -45,7 +47,7 @@ def fsstat(file1):
 	signature = vbrcontent[3:10]
 	print "File System Type :",signature
 	print " "
-#---on recupere la signature de la partition situé au 3eme jusqu'au 10eme emplacement de notre variable vbrcontent
+#---on recupere la signature de la partition situe au 3eme jusqu au 10eme emplacement de notre variable vbrcontent
 
 	print "METADATA INFORMATION"
 	print "------------------------------------------------"

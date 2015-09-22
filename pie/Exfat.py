@@ -16,6 +16,7 @@ class Exfat(object):
 		self.init_fat()
 		self.init_root_dir()
 		self.init_allocation_bitmap()
+		self.init_file_entry_sets()
 
 	def init_vbr(self):
 		self.vbr = Vbr(self.payload[0:512])
@@ -39,13 +40,22 @@ class Exfat(object):
 				self.allocation_bitmap = AllocationBitmap(self.get_clusters(self.fat.get_cluster_chain(entry.entry.first_cluster)), entry.entry.data_length)
 				break
 
-	def get_clusters(self, cluster_list):
+	def init_file_entry_sets(self):
+		self.file_entry_sets = {}
+		self.get_file_entry_sets(self.root_dir.entries)
+
+	def get_clusters(self, cluster_list, is_contiguous=False, data_length=None):
 		clusters_data = ""
-		for cluster in cluster_list:
-			cluster_start = (self.vbr.cluster_heap_offset * (2**self.vbr.bytes_per_sector)) + ((cluster-CLUSTER_START) * (2**self.vbr.sectors_per_cluster) * (2**self.vbr.bytes_per_sector))
-			cluster_end = cluster_start + ((2**self.vbr.sectors_per_cluster) * (2**self.vbr.bytes_per_sector))
-			clusters_data = clusters_data + self.payload[cluster_start:cluster_end]
-		return clusters_data
+		if not is_contiguous:
+			for cluster in cluster_list:
+				cluster_start = (self.vbr.cluster_heap_offset * (2**self.vbr.bytes_per_sector)) + ((cluster-CLUSTER_START) * (2**self.vbr.sectors_per_cluster) * (2**self.vbr.bytes_per_sector))
+				cluster_end = cluster_start + ((2**self.vbr.sectors_per_cluster) * (2**self.vbr.bytes_per_sector))
+				clusters_data = clusters_data + self.payload[cluster_start:cluster_end]
+			return clusters_data[:len(clusters_data)-1 if not data_length else data_length]
+		elif is_contiguous and data_length > 0:
+			cluster_start = (self.vbr.cluster_heap_offset * (2**self.vbr.bytes_per_sector)) + ((cluster_list[0]-CLUSTER_START) * (2**self.vbr.sectors_per_cluster) * (2**self.vbr.bytes_per_sector))
+			cluster_size_in_bytes = (2**self.vbr.sectors_per_cluster) * (2**self.vbr.bytes_per_sector)
+			return self.payload[cluster_start:cluster_start + data_length]
 
 	# XXX Refactor ALL *files*/*deleted_files* methods below
 
@@ -73,9 +83,22 @@ class Exfat(object):
 
 				if entry.fde.entry.is_directory():
 					entry_cluster_list = self.fat.get_cluster_chain(entry.sede.entry.first_cluster)
-					clusters_raw = self.get_clusters(entry_cluster_list)
+					clusters_raw = self.get_clusters(entry_cluster_list, entry.sede.entry.is_contiguous(), entry.sede.entry.data_length)
 					files.append(self.search_files(self.get_entries(clusters_raw)))
 		return files
+
+	def get_file_entry_sets(self, entries):
+		for entry in entries:
+			if isinstance(entry, FileEntrySet):
+				first_cluster = int(entry.sede.entry.first_cluster)
+				self.file_entry_sets[first_cluster] = entry
+
+				if entry.fde.entry.is_directory():
+					entry_cluster_list = self.fat.get_cluster_chain(entry.sede.entry.first_cluster)
+					clusters_raw = self.get_clusters(entry_cluster_list, entry.sede.entry.is_contiguous(), entry.sede.entry.data_length)
+					self.get_file_entry_sets(self.get_entries(clusters_raw))
+
+		return None
 
 	def search_deleted_files(self, entries):
 		files = []
@@ -91,7 +114,7 @@ class Exfat(object):
 
 				if entry.fde.entry.is_directory():
 					entry_cluster_list = self.fat.get_cluster_chain(entry.sede.entry.first_cluster)
-					clusters_raw = self.get_clusters(entry_cluster_list)
+					clusters_raw = self.get_clusters(entry_cluster_list, entry.sede.entry.is_contiguous(), entry.sede.entry.data_length)
 					files.append(self.search_deleted_files(self.get_deleted_entries(clusters_raw)))
 		return files
 

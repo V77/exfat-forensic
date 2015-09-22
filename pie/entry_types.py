@@ -99,26 +99,20 @@ class Fde(object):
 		self.last_modified_tz_offset = struct.unpack("<B", payload[23:24])[0]
 		self.last_accessed_tz_offset = struct.unpack("<B", payload[24:25])[0]
 		self.reserved2 = payload[25:32]
-
 	def is_directory(self):
 		attributes = self.get_attributes()
 		return True if int(attributes[4]) else False
-
 	def get_attributes(self):
 		return "{0:016b}".format(self.file_attributes)[::-1]
-
 	def get_create(self):
 		bitmask = "{0:032b}".format(self.create)
 		return self.extract_dos_date_time(bitmask)
-
 	def get_last_modified(self):
 		bitmask = "{0:032b}".format(self.last_modified)
 		return self.extract_dos_date_time(bitmask)
-
 	def get_last_accessed(self):
 		bitmask = "{0:032b}".format(self.last_accessed)
 		return self.extract_dos_date_time(bitmask)
-
 	def extract_dos_date_time(self, bitmask):
 		year = "{0:04d}".format(int(bitmask[0:7], 2) + 1980)			# Offset from year 1980
 		month = "{0:02d}".format(int(bitmask[7:11], 2))
@@ -126,23 +120,40 @@ class Fde(object):
 		hour = "{0:02d}".format(int(bitmask[16:21], 2))
 		minute = "{0:02d}".format(int(bitmask[21:27], 2))
 		seconds = "{0:02d}".format(int(bitmask[27:32], 2)*2)			# Doubled seconds
-
 		return day + "/" + month + "/" + year + " " + hour + ":" + minute + ":" + seconds
-
 	def __repr__(self):
+		
+		creation_date = self.get_create()
+		file_modification_date = self.get_last_modified()
+		file_access_date = self.get_last_accessed()
+		create_UTC_hours = int((self.create_tz_offset * 15) / 60)
+		create_UTC_minutes = int((self.create_tz_offset*15) % 60)
+		modify_UTC_hours = int((self.last_modified_tz_offset * 15) / 60)
+		modify_UTC_minutes = int((self.last_modified_tz_offset * 15) % 60)
+		access_UTC_hours=int((self.last_accessed_tz_offset * 15) / 60)	
+		access_UTC_minutes = int((self.last_accessed_tz_offset * 15) % 60)
+		
+		attributes = self.get_attributes()
+		flags = ""
+		if attributes[0] :
+			flags += "Read-only "
+		if attributes[1] :
+			flags += "Hidden "
+		if attributes[2] :
+			flags += "System "
+		if attributes[4] :
+			flags += "Directory "
+		if attributes[5] :
+			flags += "Archive "
+		
 		return 	"File Directory Entry\n" +\
 				"secondary_count : " + str(self.secondary_count) + "\n" +\
 				"set_checksum : " + str(self.set_checksum) + "\n" +\
-				"file_attributes : " + "{0:016b}".format(self.file_attributes)[::-1] + "\n" +\
+				"flags : " + flags + "\n" + \
 				"reserved1 : " + str(self.reserved1) + "\n" +\
-				"create : " + str(self.create) + "\n" +\
-				"last_modified : " + str(self.last_modified) + "\n" +\
-				"last_accessed : " + str(self.last_accessed) + "\n" +\
-				"create_10ms : " + str(self.create_10ms) + "\n" +\
-				"last_modified_10ms : " + str(self.last_modified_10ms) + "\n" +\
-				"create_tz_offset : " + str(self.create_tz_offset) + "\n" +\
-				"last_modified_tz_offset : " + str(self.last_modified_tz_offset) + "\n" +\
-				"last_accessed_tz_offset : " + str(self.last_accessed_tz_offset) + "\n" +\
+				"creation date : " + creation_date + " UTC+" + create_UTC_hours + ":" + create_UTC_minutes + "\n" + \
+				"last modified date : " + file_modification_date + " UTC+" + modify_UTC_hours + ":" + modify_UTC_minutes + "\n" + \
+				"last accessed date : " + creation_date + " UTC+" + access_UTC_hours + ":" + access_UTC_minutes + "\n" + \
 				"reserved2 : " + str(self.reserved2) + "\n\n"
 
 class Sede(object):

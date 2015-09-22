@@ -3,7 +3,7 @@
 import sys
 import struct
 import os
-from mbr3 import *
+from mbr import *
 
 
 

@@ -1,2 +1,2 @@
-
-disk3.001
+# Ignore Python Bytecode files
+*.pyc

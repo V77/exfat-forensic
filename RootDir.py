@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from entry_types import *
+from Entry import *
 from FileEntrySet import *
 
 class RootDir(object):

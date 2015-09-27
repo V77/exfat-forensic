@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from Vbr import *
-from entry_types import *
+from Entry import *
 from Fat import *
 from RootDir import *
 from AllocationBitmap import *

@@ -1,13 +1,4 @@
-# Use in your code:
-#
-# from entry_types import *
-# my_entry = Entry(raw_32_bytes_entry)
-# entry_type = my_entry.entry_type
-# if entry_type == VLDE:
-# 	vlde_volume_label = my_entry.entry.volume_label
-#
-# This will automatically set the entry type depending on the raw_32_bytes_entry first byte,
-# and create/fill the 'entry' object's attributes (depending on entry type)
+#!/usr/bin/env python
 
 import struct
 
@@ -122,7 +113,7 @@ class Fde(object):
 		seconds = "{0:02d}".format(int(bitmask[27:32], 2)*2)			# Doubled seconds
 		return day + "/" + month + "/" + year + " " + hour + ":" + minute + ":" + seconds
 	def __repr__(self):
-		
+
 		creation_date = self.get_create()
 		file_modification_date = self.get_last_modified()
 		file_access_date = self.get_last_accessed()
@@ -130,9 +121,9 @@ class Fde(object):
 		create_UTC_minutes = int((self.create_tz_offset*15) % 60)
 		modify_UTC_hours = int((self.last_modified_tz_offset * 15) / 60)
 		modify_UTC_minutes = int((self.last_modified_tz_offset * 15) % 60)
-		access_UTC_hours=int((self.last_accessed_tz_offset * 15) / 60)	
+		access_UTC_hours=int((self.last_accessed_tz_offset * 15) / 60)
 		access_UTC_minutes = int((self.last_accessed_tz_offset * 15) % 60)
-		
+
 		attributes = self.get_attributes()
 		flags = ""
 		if attributes[0] :
@@ -145,7 +136,7 @@ class Fde(object):
 			flags += "Directory "
 		if attributes[5] :
 			flags += "Archive "
-		
+
 		return 	"File Directory Entry\n" +\
 				"secondary_count : " + str(self.secondary_count) + "\n" +\
 				"set_checksum : " + str(self.set_checksum) + "\n" +\

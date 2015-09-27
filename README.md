@@ -1,3 +1,3 @@
 # exfat-forensic
-Exfat forensic in Python.
+exFAT forensic in Python.
 i love exfat

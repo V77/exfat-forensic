@@ -53,6 +53,6 @@ class Partition(object):
 
 if __name__ == "__main__":
 
-	f = open("../disk1.001")
+	f = open("./exfat1/disk1.001")
 	print Mbr(f.read(512))
 	f.close()

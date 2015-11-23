@@ -90,20 +90,26 @@ class Fde(object):
 		self.last_modified_tz_offset = struct.unpack("<B", payload[23:24])[0]
 		self.last_accessed_tz_offset = struct.unpack("<B", payload[24:25])[0]
 		self.reserved2 = payload[25:32]
+
 	def is_directory(self):
 		attributes = self.get_attributes()
 		return True if int(attributes[4]) else False
+
 	def get_attributes(self):
 		return "{0:016b}".format(self.file_attributes)[::-1]
+
 	def get_create(self):
 		bitmask = "{0:032b}".format(self.create)
 		return self.extract_dos_date_time(bitmask)
+
 	def get_last_modified(self):
 		bitmask = "{0:032b}".format(self.last_modified)
 		return self.extract_dos_date_time(bitmask)
+
 	def get_last_accessed(self):
 		bitmask = "{0:032b}".format(self.last_accessed)
 		return self.extract_dos_date_time(bitmask)
+
 	def extract_dos_date_time(self, bitmask):
 		year = "{0:04d}".format(int(bitmask[0:7], 2) + 1980)			# Offset from year 1980
 		month = "{0:02d}".format(int(bitmask[7:11], 2))
@@ -112,8 +118,8 @@ class Fde(object):
 		minute = "{0:02d}".format(int(bitmask[21:27], 2))
 		seconds = "{0:02d}".format(int(bitmask[27:32], 2)*2)			# Doubled seconds
 		return day + "/" + month + "/" + year + " " + hour + ":" + minute + ":" + seconds
-	def __repr__(self):
 
+	def __repr__(self):
 		creation_date = self.get_create()
 		file_modification_date = self.get_last_modified()
 		file_access_date = self.get_last_accessed()

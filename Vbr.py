@@ -55,7 +55,7 @@ class Vbr(object):
 
 if __name__ == "__main__":
 
-	f = open("../disk1.001")
+	f = open("./exfat1/disk1.001")
 	f.seek(51*512)
 	print Vbr(f.read(512))
 	f.close()
